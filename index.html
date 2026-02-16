@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wan 2.2 Video Comparison: Lightning 4-Step vs Fal API</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0d1117; color: #e6edf3; padding: 2rem;
+    max-width: 1400px; margin: 0 auto;
+  }
+  h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; }
+  .subtitle {
+    text-align: center; color: #8b949e; margin-bottom: 2rem;
+    font-size: 0.95rem; line-height: 1.6;
+  }
+  .bar {
+    position: sticky; top: 0; background: #0d1117ee; backdrop-filter: blur(8px);
+    padding: 0.75rem 0; z-index: 10; border-bottom: 1px solid #21262d;
+    display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .bar button {
+    background: #21262d; color: #e6edf3; border: 1px solid #30363d;
+    padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  }
+  .bar button:hover { background: #30363d; }
+  .bar .jump { width: 60px; text-align: center; background: #0d1117;
+    color: #e6edf3; border: 1px solid #30363d; border-radius: 6px;
+    padding: 0.4rem; font-size: 0.85rem; }
+  .bar label { color: #8b949e; font-size: 0.85rem; }
+  .card {
+    background: #161b22; border: 1px solid #21262d; border-radius: 8px;
+    margin-bottom: 1.5rem; overflow: hidden;
+  }
+  .card-header {
+    padding: 0.75rem 1rem; background: #1c2128; border-bottom: 1px solid #21262d;
+    display: flex; align-items: baseline; gap: 0.75rem;
+  }
+  .num {
+    background: #238636; color: #fff; padding: 0.15rem 0.55rem;
+    border-radius: 4px; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+  }
+  .prompt-text { color: #8b949e; font-size: 0.85rem; line-height: 1.4; }
+  .videos { display: grid; grid-template-columns: 1fr 1fr; }
+  .vid-col { padding: 0.75rem; }
+  .vid-col:first-child { border-right: 1px solid #21262d; }
+  .vid-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 0.4rem;
+  }
+  .vid-label.mine { color: #58a6ff; }
+  .vid-label.fal  { color: #f78166; }
+  video { width: 100%; border-radius: 4px; background: #000; display: block; }
+  @media (max-width: 800px) {
+    body { padding: 0.75rem; }
+    .videos { grid-template-columns: 1fr; }
+    .vid-col:first-child { border-right: none; border-bottom: 1px solid #21262d; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Wan 2.2 A14B &mdash; Video Comparison</h1>
+<p class="subtitle">
+  <strong style="color:#58a6ff">My Test</strong> &mdash; Lightning 4-step, FP8, single B200 &nbsp;&bull;&nbsp;
+  <strong style="color:#f78166">Fal API</strong> &mdash; 27-step, default settings<br>
+  94 identical prompts &nbsp;&bull;&nbsp; 720p 16:9 &nbsp;&bull;&nbsp; 81 frames @ 16 fps
+</p>
+
+<div class="bar">
+  <button onclick="playVisible()">&#9654; Play Visible</button>
+  <button onclick="pauseAll()">&#10074;&#10074; Pause All</button>
+  <button onclick="resetAll()">&#8634; Reset All</button>
+  <span style="width:1px; height:1.2rem; background:#30363d; margin:0 0.25rem"></span>
+  <label>Jump to #</label>
+  <input class="jump" type="number" min="1" max="94" placeholder="1" onchange="jumpTo(this.value)">
+</div>
+
+<div class="card" id="p1">
+  <div class="card-header">
+    <span class="num">1</span>
+    <span class="prompt-text">Sunny lighting, edge lighting, low-contrast, medium close-up shot, left-heavy composition, clean single shot, warm colors, soft lighting, side lighting, day time. A young girl sits in a field of tall grass with two fluffy donkeys standing behind her.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_001.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_001.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p2">
+  <div class="card-header">
+    <span class="num">2</span>
+    <span class="prompt-text">Artificial lighting, edge lighting, desaturated colors, warm colors, right-heavy composition, over-the-shoulder shot, The camera focuses on a young woman with Western features, dressed in a blue and white checkered shirt. Her features are striking, and her eyes are bright and attentive.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_002.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_002.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p3">
+  <div class="card-header">
+    <span class="num">3</span>
+    <span class="prompt-text">Moonlighting. A young woman is positioned in an old-style room against a backdrop of a speckled tile wall and an aged wooden door. She has a sharp, black bob haircut, with fine, slender eyebrows. Her blue eyes, under the weak moonlight, seem particularly profound.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_003.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_003.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p4">
+  <div class="card-header">
+    <span class="num">4</span>
+    <span class="prompt-text">Practical lighting, underlighting, high contrast lighting, night time, warm colors, low angle shot, medium close-up shot, two shot. The scene is dimly lit. A Caucasian woman is seated on the edge of a bed, dressed in a white T-shirt emblazoned with the black text &quot;HUMMER &amp; ELLIS&quot;.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_004.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_004.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p5">
+  <div class="card-header">
+    <span class="num">5</span>
+    <span class="prompt-text">Firelighting, Over-the-shoulder shot. A man in a white shirt and brown vest stands by a fireplace, looking at someone to the right.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_005.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_005.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p6">
+  <div class="card-header">
+    <span class="num">6</span>
+    <span class="prompt-text">Fluorescent lighting, In a long, narrow corridor flanked by blue metal lockers, a young woman is standing. She has long, dark hair that falls over her forehead in bangs and is dressed in a checkered shirt.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_006.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_006.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p7">
+  <div class="card-header">
+    <span class="num">7</span>
+    <span class="prompt-text">Overcast lighting, medium lens, soft lighting, low contrast lighting, edge lighting, low angle shot, desaturated colors, medium close-up shot, clean single shot, cool colors, center composition. The camera captures a low-angle close-up of a Western man outdoors.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_007.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_007.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p8">
+  <div class="card-header">
+    <span class="num">8</span>
+    <span class="prompt-text">Mixed lighting, contrast, underlighting, short-side composition, night time, mixed colors, close-up shot, low angle shot, side lighting, cool colors. In a dimly lit room, a man stands silhouetted against a projection screen.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_008.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_008.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p9">
+  <div class="card-header">
+    <span class="num">9</span>
+    <span class="prompt-text">Sunny lighting, sunset time, warm colors, medium shot, desaturated colors, daylight, side lighting. Sunlight streams into a kitchen where a man is preparing food.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_009.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_009.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p10">
+  <div class="card-header">
+    <span class="num">10</span>
+    <span class="prompt-text">Soft lighting, sunset time, side lighting, edge lighting, warm colors, desaturated colors, center composition, medium close-up shot, eye-level shot. A couple stands next to a yellow taxi in a medium shot.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_010.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_010.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p11">
+  <div class="card-header">
+    <span class="num">11</span>
+    <span class="prompt-text">Hard lighting, side lighting, medium shot, desaturated colors, high contrast lighting, medium lens. An eye-level, close-up shot of a Western man. He is wearing a striped shirt and is sitting at a wooden desk.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_011.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_011.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p12">
+  <div class="card-header">
+    <span class="num">12</span>
+    <span class="prompt-text">Top lighting, clean single shot, long lens, extreme close-up shot. An eye-level, extreme close-up of a Caucasian woman's face. She has brown hair and eyebrows. Her green eyes are wide open, bulging outward.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_012.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_012.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p13">
+  <div class="card-header">
+    <span class="num">13</span>
+    <span class="prompt-text">Side lighting, edge lighting, soft lighting, medium close-up shot, dusk time, sunset time, center composition, warm colors, desaturated colors, long lens. A woman with fluffy brown curly hair stands elegantly in front of a magnificent stained-glass window.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_013.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_013.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p14">
+  <div class="card-header">
+    <span class="num">14</span>
+    <span class="prompt-text">Medium lens, soft lighting, low contrast lighting, medium shot, daylight, backlighting, clean single shot. In a full, eye-level shot, a Caucasian man is lying on the floor.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_014.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_014.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p15">
+  <div class="card-header">
+    <span class="num">15</span>
+    <span class="prompt-text">Underlighting, dawn time, firelight, warm colors, low contrast lighting, backlighting, three shot. In a dark background, an eye-level close-up shot captures a Western woman.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_015.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_015.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p16">
+  <div class="card-header">
+    <span class="num">16</span>
+    <span class="prompt-text">Edge lighting, dusk time, sunset time, side lighting, medium shot, center composition, warm colors, soft lighting, desaturated colors, clean two shot. In the frame, a Western man wearing a yellow short-sleeved shirt stands in the center foreground.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_016.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_016.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p17">
+  <div class="card-header">
+    <span class="num">17</span>
+    <span class="prompt-text">Silhouette lighting, dusk time, mixed colors, wide shot, firelight, establishing shot, high contrast lighting. The video follows a runner through different terrains.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_017.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_017.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p18">
+  <div class="card-header">
+    <span class="num">18</span>
+    <span class="prompt-text">Low contrast lighting. In a retro 70s-style subway station, a street musician plays amidst dim colors and gritty textures.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_018.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_018.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p19">
+  <div class="card-header">
+    <span class="num">19</span>
+    <span class="prompt-text">High contrast lighting, saturated colors, short-side composition, sunset time, medium lens, soft lighting, backlighting, warm colors, edge lighting, medium close-up shot, daylight, sunny lighting. A close-up of a Caucasian woman in a yellow checkered dress.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_019.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_019.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p20">
+  <div class="card-header">
+    <span class="num">20</span>
+    <span class="prompt-text">Sunrise time, daylight, soft lighting, side lighting, edge lighting, medium close-up shot, center composition, warm colors. A Caucasian woman is sitting on a large white bed, wearing a blue and white checkered cotton top.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_020.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_020.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p21">
+  <div class="card-header">
+    <span class="num">21</span>
+    <span class="prompt-text">Night time, practical lighting, saturated colors, mixed lighting, top lighting, soft lighting, wide shot, symmetrical composition, wide-angle lens. In dim lighting, an eye-level wide shot shows two foreigners sitting at a table and conversing.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_021.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_021.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p22">
+  <div class="card-header">
+    <span class="num">22</span>
+    <span class="prompt-text">Dusk time, soft lighting, side lighting, desaturated colors, cool colors, center composition, medium close-up shot. As twilight deepens on a deserted city street, a petite girl stands alone.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_022.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_022.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p23">
+  <div class="card-header">
+    <span class="num">23</span>
+    <span class="prompt-text">Sunset time, side lighting, edge lighting, soft lighting, cool colors, medium shot, center composition, clean single shot. A tall, fair-skinned foreign man, dressed in a sharply tailored dark gray suit, sits upright in a car.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_023.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_023.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p24">
+  <div class="card-header">
+    <span class="num">24</span>
+    <span class="prompt-text">Dawn time, firelight, left-weighted composition, cool colors, low contrast lighting, high angle shot. In the video, the camera slowly pushes in for a close-up on the archer's eyes and the arrowhead.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_024.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_024.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p25">
+  <div class="card-header">
+    <span class="num">25</span>
+    <span class="prompt-text">Sunrise time, side lighting, edge lighting, medium close-up shot, center composition, soft lighting, warm colors, desaturated colors, sunny lighting. In front of the camera is an elderly foreign man with a wrinkled face.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_025.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_025.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p26">
+  <div class="card-header">
+    <span class="num">26</span>
+    <span class="prompt-text">An extreme close-up shot of a foreign man's face. He has blue eyes and a shaved head, his face is covered in sweat. He stares at the camera, then lowers his head.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_026.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_026.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p27">
+  <div class="card-header">
+    <span class="num">27</span>
+    <span class="prompt-text">Close-up shot, edge lighting, daylight, soft lighting, desaturated colors, center composition, daylight. In an eye-level shot, three figures compose the frame. In the center is a foreign boy in a red school uniform.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_027.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_027.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p28">
+  <div class="card-header">
+    <span class="num">28</span>
+    <span class="prompt-text">Medium shot, edge lighting, daylight, side lighting, daylight, center composition. A slightly disheveled foreign man, wearing a light blue shirt with a black pinstripe tie, stands in front of a dark blue wall.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_028.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_028.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p29">
+  <div class="card-header">
+    <span class="num">29</span>
+    <span class="prompt-text">Medium close-up shot. An elderly Caucasian man is sitting indoors, conversing with another person. He is wearing a dark blue jacket over a white shirt and a black sweater.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_029.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_029.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p30">
+  <div class="card-header">
+    <span class="num">30</span>
+    <span class="prompt-text">A male photographer, wearing a dark green windbreaker and carrying a camera bag, holds a professional DSLR camera and is slowly walking deep into a forest on an overcast day.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_030.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_030.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p31">
+  <div class="card-header">
+    <span class="num">31</span>
+    <span class="prompt-text">On a night ravaged by a blizzard, the convenience store is warm and quiet. The young cashier, wearing a simple work uniform, warms his hands with his breath.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_031.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_031.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p32">
+  <div class="card-header">
+    <span class="num">32</span>
+    <span class="prompt-text">Wide-angle lens, center composition, saturated colors, extreme wide shot, backlighting, establishing shot, practical lighting, warm colors. In a sunlit Roman square, actors dressed in togas are arguing.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_032.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_032.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p33">
+  <div class="card-header">
+    <span class="num">33</span>
+    <span class="prompt-text">Center composition, soft lighting, warm colors, medium close-up shot, dusk time, sunny lighting, edge lighting. The camera slowly pushes in for a close-up on the face of a distinguished elderly gentleman.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_033.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_033.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p34">
+  <div class="card-header">
+    <span class="num">34</span>
+    <span class="prompt-text">Balanced composition, saturated colors, medium lens, soft lighting, warm colors, low contrast lighting, medium shot, fluorescent lighting, two shot. In a supermarket, there is an eye-level close-up of a foreign man and woman.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_034.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_034.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p35">
+  <div class="card-header">
+    <span class="num">35</span>
+    <span class="prompt-text">Left-weighted composition, over-the-shoulder shot, close-up shot, medium lens, soft lighting, low contrast lighting, overcast lighting, clean single shot. An eye-level close-up shows a foreign woman walking in a garden.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_035.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_035.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p36">
+  <div class="card-header">
+    <span class="num">36</span>
+    <span class="prompt-text">Symmetrical composition, soft lighting, backlighting, low contrast lighting, sunny lighting, medium wide shot, daylight, wide-angle lens. In a green grassy field, a man walks forward with his back to the camera.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_036.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_036.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p37">
+  <div class="card-header">
+    <span class="num">37</span>
+    <span class="prompt-text">Short-side composition, close-up shot, medium lens, soft lighting, low contrast lighting, desaturated colors, daylight, side lighting, clean single shot. An eye-level close-up of a foreign girl's head.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_037.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_037.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p38">
+  <div class="card-header">
+    <span class="num">38</span>
+    <span class="prompt-text">Medium lens, two shot, warm colors, over-the-shoulder shot, high contrast lighting. An eye-level close-up of a foreign girl wearing a red and black striped sweater.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_038.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_038.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p39">
+  <div class="card-header">
+    <span class="num">39</span>
+    <span class="prompt-text">A ragged wanderer is curled up in the corner of an abandoned factory, next to rust-streaked metal pipes. The shot is a wide lens, showing geometric composition.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_039.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_039.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p40">
+  <div class="card-header">
+    <span class="num">40</span>
+    <span class="prompt-text">Long-focus lens, close-up shot, soft lighting, daylight, side lighting, sunny lighting, clean single shot, cool colors, center composition. An eye-level close-up of a foreign man's face.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_040.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_040.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p41">
+  <div class="card-header">
+    <span class="num">41</span>
+    <span class="prompt-text">Telephoto lens. A tiger walking through the jungle. The camera follows the tiger smoothly, keeping it in the center of the frame as the muscles ripple slowly beneath its striped fur.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_041.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_041.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p42">
+  <div class="card-header">
+    <span class="num">42</span>
+    <span class="prompt-text">Fisheye lens, balanced composition, top lighting, warm colors, low contrast lighting, group shot. In a low-angle close-up, a group of Caucasian men and women are gathered around a circular hole.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_042.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_042.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p43">
+  <div class="card-header">
+    <span class="num">43</span>
+    <span class="prompt-text">Over-the-shoulder shot, two shot, telephoto lens, warm colors, high contrast lighting, soft lighting, daylight, close-up shot, center composition. In an eye-level shot, a foreign girl sits by a window.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_043.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_043.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p44">
+  <div class="card-header">
+    <span class="num">44</span>
+    <span class="prompt-text">High angle shot, daylight, fisheye lens, clean single shot, mixed colors, daylight, top-down shot. A foreign man sitting in the back seat of an orange taxi.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_044.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_044.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p45">
+  <div class="card-header">
+    <span class="num">45</span>
+    <span class="prompt-text">Low angle shot, medium close-up shot, soft lighting, warm colors, daylight, center composition, clean single shot. A tall foreign man with short blond hair is wearing a well-tailored dark suit.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_045.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_045.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p46">
+  <div class="card-header">
+    <span class="num">46</span>
+    <span class="prompt-text">Dutch angle shot, high contrast lighting, mixed lighting, night time, top lighting, medium shot, high angle shot, fisheye lens, fluorescent lighting. In a dimly lit elevator, a blonde woman stands in front of a mirror.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_046.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_046.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p47">
+  <div class="card-header">
+    <span class="num">47</span>
+    <span class="prompt-text">Aerial shot, warm colors, extreme wide shot, sunny lighting, hard lighting, daylight, establishing shot. In a desolate desert, a black SUV speeds along a highway.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_047.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_047.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p48">
+  <div class="card-header">
+    <span class="num">48</span>
+    <span class="prompt-text">Hgh angle shot, night time, medium lens, soft lighting, warm colors, low contrast lighting, desaturated colors, artificial lighting, two shot. A foreign man and a foreign woman are lying on a sofa.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_048.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_048.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p49">
+  <div class="card-header">
+    <span class="num">49</span>
+    <span class="prompt-text">Clean single shot, close-up shot, high angle shot, top lighting, soft lighting, dawn time, low contrast lighting, desaturated colors, daylight, telephoto lens, fluorescent lighting, cool colors. In water, a woman is floating on her back.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_049.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_049.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p50">
+  <div class="card-header">
+    <span class="num">50</span>
+    <span class="prompt-text">Two shot, daylight, soft lighting, side lighting, medium shot, over-the-shoulder shot, right-weighted composition, medium lens, warm colors. A close-up of a foreign man wearing a dark suit speaking to a woman.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_050.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_050.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p51">
+  <div class="card-header">
+    <span class="num">51</span>
+    <span class="prompt-text">Three shot, practical lighting, saturated colors, balanced composition, night time, top lighting, soft lighting, warm colors, medium lens, low contrast lighting, medium shot, artificial lighting. Three foreigners in formal wear.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_051.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_051.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p52">
+  <div class="card-header">
+    <span class="num">52</span>
+    <span class="prompt-text">Group shot, medium lens, soft lighting, warm colors, firelight. In a dimly lit church, an eye-level close-up shot shows a foreign woman wearing a black robe holding a candle.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_052.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_052.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p53">
+  <div class="card-header">
+    <span class="num">53</span>
+    <span class="prompt-text">Establishing shot, high contrast lighting, hard lighting. In a black and white alley, rainwater glistens on the road surface under a streetlamp. A figure in a trench coat walks into the frame.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_053.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_053.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p54">
+  <div class="card-header">
+    <span class="num">54</span>
+    <span class="prompt-text">Warm colors, left-weighted composition, sunset time, soft lighting, medium close-up shot. A foreign woman wearing a dark brown wool coat with a fur collar is sitting on a wooden bench.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_054.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_054.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p55">
+  <div class="card-header">
+    <span class="num">55</span>
+    <span class="prompt-text">Cool colors, rim lighting, close-up shot, desaturated colors, soft lighting, night time, overcast lighting. A young boy is lying on white sheets, his head tilted slightly back.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_055.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_055.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p56">
+  <div class="card-header">
+    <span class="num">56</span>
+    <span class="prompt-text">Saturated colors, center composition. A foreign man in a black coat with a thick beard is surrounded by faintly glowing candles and green plants.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_056.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_056.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p57">
+  <div class="card-header">
+    <span class="num">57</span>
+    <span class="prompt-text">Desaturated colors, rim lighting, close-up shot, soft lighting, cool colors, center composition, eye-level shot. An elderly foreign man wearing a black wide-brimmed hat.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_057.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_057.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p58">
+  <div class="card-header">
+    <span class="num">58</span>
+    <span class="prompt-text">A group of diverse, energetic hip-hop dancers performing street dance on a vast stage, illuminated by vibrant neon lights. Synchronized dance moves with rim light effects.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_058.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_058.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p59">
+  <div class="card-header">
+    <span class="num">59</span>
+    <span class="prompt-text">A sprinter, his face distorted from extreme exertion, wearing professional spikes. At the finish line of a 100-meter dash, he is sprinting at full power with astonishing speed.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_059.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_059.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p60">
+  <div class="card-header">
+    <span class="num">60</span>
+    <span class="prompt-text">In an urban skate park, a skater accelerates alongside a graffiti-covered wall, then suddenly pops the tail of his board for an ollie, launching into the air to clear a low wall.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_060.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_060.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p61">
+  <div class="card-header">
+    <span class="num">61</span>
+    <span class="prompt-text">In a low-angle wide shot, a man and a woman are playing soccer. Documentary photography style, full of movement and vitality. Standing in front of a white building.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_061.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_061.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p62">
+  <div class="card-header">
+    <span class="num">62</span>
+    <span class="prompt-text">A foreign woman is dressed in a white tennis outfit, wearing a sparkling necklace, with her hair in a high ponytail. She swings her arm rapidly, connecting with the incoming tennis ball.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_062.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_062.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p63">
+  <div class="card-header">
+    <span class="num">63</span>
+    <span class="prompt-text">An eye-level close-up shot captures an indoor table tennis match. Two foreign men are engaged in an intense game. One man in an orange shirt swings his paddle.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_063.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_063.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p64">
+  <div class="card-header">
+    <span class="num">64</span>
+    <span class="prompt-text">This captures the moment a snowboarder completes a high-difficulty aerial spin in a U-shaped pipe. Follow-cam perspective with a wide-angle lens.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_064.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_064.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p65">
+  <div class="card-header">
+    <span class="num">65</span>
+    <span class="prompt-text">This slow-motion, close-up video captures a moment of power and beauty on the basketball court. A player wearing a No. 11 yellow, white, and blue jersey executes a two-handed dunk.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_065.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_065.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p66">
+  <div class="card-header">
+    <span class="num">66</span>
+    <span class="prompt-text">On a muddy rugby field, an athlete wearing a black uniform with orange-red stripes is sprinting at full power. He leaps, clutching the rugby ball tightly.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_066.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_066.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p67">
+  <div class="card-header">
+    <span class="num">67</span>
+    <span class="prompt-text">Dusk time, soft lighting, side lighting, medium long shot, balanced composition, warm colors. A graceful Mongolian woman is performing the bowl dance on a vast grassland with porcelain bowls.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_067.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_067.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p68">
+  <div class="card-header">
+    <span class="num">68</span>
+    <span class="prompt-text">On the wing of a jet plane flying at high altitude, a performer in a red and white gymnastics suit performs an aerial cartwheel and lands steadily on the edge of the metal wing.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_068.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_068.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p69">
+  <div class="card-header">
+    <span class="num">69</span>
+    <span class="prompt-text">A battle-hardened warrior, his face and body covered in mud and wounds, is wearing heavy leather armor. He stands alone on a muddy battlefield, staring angrily ahead in the rain.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_069.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_069.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p70">
+  <div class="card-header">
+    <span class="num">70</span>
+    <span class="prompt-text">In a dark room, only the faint light from a phone screen illuminates a young woman's face. Her pupils are dilated with extreme fear, and her lips are slightly parted.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_070.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_070.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p71">
+  <div class="card-header">
+    <span class="num">71</span>
+    <span class="prompt-text">A kind-faced old man, wearing a straw hat and overalls, stands in a sunny vegetable garden. He is holding a ripe tomato and is very happy, his eyes shining with pure happiness.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_071.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_071.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p72">
+  <div class="card-header">
+    <span class="num">72</span>
+    <span class="prompt-text">By the car window on a rainy day, a young man leans against the cold glass. His gaze is empty and unfocused as he stares sadly outside. A single tear slips from his reddened eye.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_072.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_072.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p73">
+  <div class="card-header">
+    <span class="num">73</span>
+    <span class="prompt-text">A young girl pushes open a door, a surprised expression on her face as she sees a completely unexpected scene.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_073.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_073.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p74">
+  <div class="card-header">
+    <span class="num">74</span>
+    <span class="prompt-text">In a dimly lit room, a detective sits at his desk and opens a file folder. The camera pushes in for a close-up as his pupils contract and his expression becomes tense.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_074.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_074.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p75">
+  <div class="card-header">
+    <span class="num">75</span>
+    <span class="prompt-text">A soft, round animated character wakes up to find their bed is a giant golden corn kernel. The camera pulls back, revealing that the room is a giant corn silo.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_075.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_075.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p76">
+  <div class="card-header">
+    <span class="num">76</span>
+    <span class="prompt-text">A visitor is standing in front of a painting, admiring it. The camera pans to the right, following her steps, to reveal a series of paintings in a unified style hanging on the wall.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_076.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_076.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p77">
+  <div class="card-header">
+    <span class="num">77</span>
+    <span class="prompt-text">A display window on a commercial street. The camera moves to the left, slowly panning across the window of a luxury store, then reveals a homeless person in the corner of an alley.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_077.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_077.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p78">
+  <div class="card-header">
+    <span class="num">78</span>
+    <span class="prompt-text">A little girl lost in New York's Times Square looks up. The camera tilts up from the ground to reveal massive, glittering skyscrapers and billboards.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_078.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_078.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p79">
+  <div class="card-header">
+    <span class="num">79</span>
+    <span class="prompt-text">Fashion magazine, motion blur, handheld camera, a close-up photo of a group of 18-year-old hippie goths at a warehouse party, horror movie style, hyper-realistic.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_079.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_079.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p80">
+  <div class="card-header">
+    <span class="num">80</span>
+    <span class="prompt-text">A drone shot, performing a rapid fly-through. Starts inside a circular pipe, then shoots upward to reveal a vast polar snowfield at sunrise. A blue hot air balloon with &quot;CNG&quot; rises.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_080.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_080.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p81">
+  <div class="card-header">
+    <span class="num">81</span>
+    <span class="prompt-text">Impressionistic style, watercolor style. A fox slowly moves through a forest. Its form appears to be dissolving, seamlessly blending with the blurry forest background.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_081.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_081.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p82">
+  <div class="card-header">
+    <span class="num">82</span>
+    <span class="prompt-text">Backlight, medium shot, sunset time, arc shot. The camera follows a cowboy from behind, arcing to reveal his front as he grips his holster in a desolate Western ghost town.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_082.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_082.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p83">
+  <div class="card-header">
+    <span class="num">83</span>
+    <span class="prompt-text">Felt style, golden hour sunlight. A whimsical village is nestled at the base of a giant, hollow tree trunk. Little felt gnomes in woolen hats drive a miniature wooden train.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_083.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_083.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p84">
+  <div class="card-header">
+    <span class="num">84</span>
+    <span class="prompt-text">3D cartoon style, a surreal dream where everything is made of corn. Main characters ride a corn train through giant corncobs and kernels. Bathed in warm, golden light.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_084.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_084.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p85">
+  <div class="card-header">
+    <span class="num">85</span>
+    <span class="prompt-text">Pixel art style. In a colorful universe, a player-controlled pixel character is in dialogue with a friendly alien creature with a rounded body and large eyes.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_085.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_085.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p86">
+  <div class="card-header">
+    <span class="num">86</span>
+    <span class="prompt-text">Puppet animation. In a dimly lit Victorian-style living room, felt and wooden puppets are seated around a round table, their silhouettes cast by flickering candlelight.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_086.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_086.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p87">
+  <div class="card-header">
+    <span class="num">87</span>
+    <span class="prompt-text">In a 3D game scene, a vine bridge on a floating island sways in the morning mist. A silver-haired elven archer draws her bow to its full extent. Epic atmosphere.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_087.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_087.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p88">
+  <div class="card-header">
+    <span class="num">88</span>
+    <span class="prompt-text">In a claymation style, a miniature fairy village constructed from acorns, tree bark, and moss is hidden within the crevice of an ancient tree root.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_088.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_088.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p89">
+  <div class="card-header">
+    <span class="num">89</span>
+    <span class="prompt-text">In a 2D anime style, a magic circle spins and expands beneath the character's feet, with runes orbiting it. It fires a rainbow beam that leaves a star-shaped trail.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_089.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_089.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p90">
+  <div class="card-header">
+    <span class="num">90</span>
+    <span class="prompt-text">Watercolor painting style. An azure water surface and lush green islands in the style of 3D paper cutouts. A small origami boat glides smoothly, causing realistic ripples.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_090.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_090.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p91">
+  <div class="card-header">
+    <span class="num">91</span>
+    <span class="prompt-text">Black and white animation segment. A wedding takes place inside a moving train carriage. The train jolts, and the cake and bouquets tumble down. Exaggerated shock.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_091.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_091.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p92">
+  <div class="card-header">
+    <span class="num">92</span>
+    <span class="prompt-text">In an oil painting style, a vast sea of sunflowers unfolds with bold, thick brushstrokes. Deep blue sky creates a contrast. Swarms of bees dance among the flowers.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_092.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_092.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p93">
+  <div class="card-header">
+    <span class="num">93</span>
+    <span class="prompt-text">Tilt-shift photography, high-angle shot overlooking a bustling city intersection. Vehicles and pedestrians interweave like a tapestry in a magical, miniature world.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_093.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_093.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+<div class="card" id="p94">
+  <div class="card-header">
+    <span class="num">94</span>
+    <span class="prompt-text">Time-lapse, dusk, sunset. An anthropomorphic metal robot walks down a busy city street. Its shell has a silver-gray sheen with fine mechanical textures.</span>
+  </div>
+  <div class="videos">
+    <div class="vid-col">
+      <div class="vid-label mine">My Test</div>
+      <video src="my_test_videos/prompt_094.mp4" controls muted preload="none" playsinline></video>
+    </div>
+    <div class="vid-col">
+      <div class="vid-label fal">Fal API</div>
+      <video src="fal_test_videos/prompt_094.mp4" controls muted preload="none" playsinline></video>
+    </div>
+  </div>
+</div>
+
+<script>
+// Sync paired videos: play/pause/seek one and the other follows
+document.querySelectorAll('.videos').forEach(pair => {
+  const vids = pair.querySelectorAll('video');
+  if (vids.length !== 2) return;
+  vids.forEach((v, i) => {
+    v.addEventListener('play',   () => { vids[1-i].currentTime = v.currentTime; vids[1-i].play(); });
+    v.addEventListener('pause',  () => { vids[1-i].pause(); });
+    v.addEventListener('seeked', () => { vids[1-i].currentTime = v.currentTime; });
+  });
+});
+
+function pauseAll() { document.querySelectorAll('video').forEach(v => v.pause()); }
+function resetAll() { document.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; }); }
+
+function playVisible() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    const rect = card.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      card.querySelectorAll('video').forEach(v => v.play());
+    }
+  });
+}
+
+function jumpTo(n) {
+  const el = document.getElementById('p' + n);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
