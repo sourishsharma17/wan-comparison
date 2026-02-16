@@ -1585,30 +1585,52 @@
 </div>
 
 <script>
-// Sync paired videos: play/pause/seek one and the other follows
 document.querySelectorAll('.videos').forEach(pair => {
-  const vids = pair.querySelectorAll('video');
+  const vids = Array.from(pair.querySelectorAll('video'));
   if (vids.length !== 2) return;
-  vids.forEach((v, i) => {
-    v.addEventListener('play',   () => { vids[1-i].currentTime = v.currentTime; vids[1-i].play(); });
-    v.addEventListener('pause',  () => { vids[1-i].pause(); });
-    v.addEventListener('seeked', () => { vids[1-i].currentTime = v.currentTime; });
+  let syncing = false;
+
+  function sync(source, fn) {
+    if (syncing) return;
+    syncing = true;
+    const other = vids[1 - vids.indexOf(source)];
+    fn(other, source);
+    syncing = false;
+  }
+
+  vids.forEach(v => {
+    v.addEventListener('play', () => sync(v, (o, s) => {
+      if (s.ended) s.currentTime = 0;
+      if (o.ended) o.currentTime = 0;
+      o.currentTime = s.currentTime;
+      o.play();
+    }));
+    v.addEventListener('pause', () => sync(v, (o, s) => {
+      if (!s.ended) o.pause();
+    }));
+    v.addEventListener('seeked', () => sync(v, (o, s) => {
+      o.currentTime = s.currentTime;
+    }));
   });
 });
 
-function pauseAll() { document.querySelectorAll('video').forEach(v => v.pause()); }
-function resetAll() { document.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; }); }
-
+function pauseAll() {
+  document.querySelectorAll('video').forEach(v => v.pause());
+}
+function resetAll() {
+  document.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
+}
 function playVisible() {
-  const cards = document.querySelectorAll('.card');
-  cards.forEach(card => {
-    const rect = card.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      card.querySelectorAll('video').forEach(v => v.play());
+  document.querySelectorAll('.card').forEach(card => {
+    const r = card.getBoundingClientRect();
+    if (r.top < window.innerHeight && r.bottom > 0) {
+      card.querySelectorAll('video').forEach(v => {
+        if (v.ended) v.currentTime = 0;
+        v.play();
+      });
     }
   });
 }
-
 function jumpTo(n) {
   const el = document.getElementById('p' + n);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
