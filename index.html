@@ -1,419 +1,855 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Video Comparison: Original vs Ours+CFG vs Fal API</title>
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #0d1117; color: #e6edf3; padding: 2rem; padding-top: 0;
-  }
-  h1 { text-align: center; margin-bottom: 0.5rem; font-size: 1.8rem; padding-top: 1.5rem; }
-  .subtitle { text-align: center; color: #8b949e; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.6; }
-  .controls {
-    text-align: center; margin-bottom: 1.5rem; position: sticky; top: 0;
-    background: #0d1117; padding: 0.75rem 0; z-index: 10; border-bottom: 1px solid #21262d;
-  }
-  .controls button {
-    background: #21262d; color: #e6edf3; border: 1px solid #30363d;
-    padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin: 0 0.25rem;
-    font-size: 0.85rem; transition: background 0.15s;
-  }
-  .controls button:hover { background: #30363d; }
-  .controls button:active { background: #3a424d; }
-  .card {
-    background: #161b22; border: 1px solid #21262d; border-radius: 8px;
-    margin-bottom: 1.5rem; overflow: hidden;
-  }
-  .card-header {
-    padding: 0.75rem 1rem; background: #1c2128; border-bottom: 1px solid #21262d;
-    display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;
-    user-select: none; -webkit-user-select: none;
-  }
-  .card-header:hover { background: #22272e; }
-  .card-header .num {
-    background: #238636; color: #fff; padding: 0.15rem 0.5rem;
-    border-radius: 4px; font-size: 0.8rem; font-weight: 600; flex-shrink: 0;
-  }
-  .card-header .prompt-text {
-    color: #8b949e; font-size: 0.85rem; line-height: 1.4;
-  }
-  .videos {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;
-  }
-  .vid-col { padding: 0.75rem; }
-  .vid-col:not(:last-child) { border-right: 1px solid #21262d; }
-  .vid-label {
-    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.05em; margin-bottom: 0.5rem;
-  }
-  .vid-label.original { color: #58a6ff; }
-  .vid-label.ours { color: #3fb950; }
-  .vid-label.fal { color: #f78166; }
-  .vid-wrapper {
-    position: relative; width: 100%; aspect-ratio: 16/9; background: #000;
-    border-radius: 4px; overflow: hidden;
-  }
-  .vid-wrapper video {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    object-fit: contain; border-radius: 4px;
-  }
-  .vid-wrapper .error-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: none; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.7); color: #f85149; font-size: 0.8rem;
-    text-align: center; padding: 1rem; border-radius: 4px;
-  }
-  .vid-wrapper.has-error .error-overlay { display: flex; }
-  .vid-wrapper.has-error video { opacity: 0.2; }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Video Comparison: Original vs Ours+CFG vs Ours+NAG vs Fal API
+        </title>
+        <style>
+            *,
+            *::before,
+            *::after {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    sans-serif;
+                background: #0d1117;
+                color: #e6edf3;
+                padding: 2rem;
+                padding-top: 0;
+            }
+            h1 {
+                text-align: center;
+                margin-bottom: 0.5rem;
+                font-size: 1.8rem;
+                padding-top: 1.5rem;
+            }
+            .subtitle {
+                text-align: center;
+                color: #8b949e;
+                margin-bottom: 1.5rem;
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+            .controls {
+                text-align: center;
+                margin-bottom: 1.5rem;
+                position: sticky;
+                top: 0;
+                background: #0d1117;
+                padding: 0.75rem 0;
+                z-index: 10;
+                border-bottom: 1px solid #21262d;
+            }
+            .controls button {
+                background: #21262d;
+                color: #e6edf3;
+                border: 1px solid #30363d;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                cursor: pointer;
+                margin: 0 0.25rem;
+                font-size: 0.85rem;
+                transition: background 0.15s;
+            }
+            .controls button:hover {
+                background: #30363d;
+            }
+            .controls button:active {
+                background: #3a424d;
+            }
+            .card {
+                background: #161b22;
+                border: 1px solid #21262d;
+                border-radius: 8px;
+                margin-bottom: 1.5rem;
+                overflow: hidden;
+            }
+            .card-header {
+                padding: 0.75rem 1rem;
+                background: #1c2128;
+                border-bottom: 1px solid #21262d;
+                display: flex;
+                align-items: flex-start;
+                gap: 0.75rem;
+                cursor: pointer;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .card-header:hover {
+                background: #22272e;
+            }
+            .card-header .num {
+                background: #238636;
+                color: #fff;
+                padding: 0.15rem 0.5rem;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                flex-shrink: 0;
+            }
+            .card-header .prompt-text {
+                color: #8b949e;
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+            .videos {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0;
+            }
+            .vid-col {
+                padding: 0.75rem;
+            }
+            .vid-col:not(:last-child) {
+                border-right: 1px solid #21262d;
+            }
+            .vid-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.5rem;
+            }
+            .vid-label.original {
+                color: #58a6ff;
+            }
+            .vid-label.ours {
+                color: #3fb950;
+            }
+            .vid-label.nag {
+                color: #d2a8ff;
+            }
+            .vid-label.fal {
+                color: #f78166;
+            }
+            .vid-wrapper {
+                position: relative;
+                width: 100%;
+                aspect-ratio: 16/9;
+                background: #000;
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            .vid-wrapper video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                border-radius: 4px;
+            }
+            .vid-wrapper .error-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.7);
+                color: #f85149;
+                font-size: 0.8rem;
+                text-align: center;
+                padding: 1rem;
+                border-radius: 4px;
+            }
+            .vid-wrapper.has-error .error-overlay {
+                display: flex;
+            }
+            .vid-wrapper.has-error video {
+                opacity: 0.2;
+            }
+            .vid-wrapper .buffering-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.5);
+                color: #8b949e;
+                font-size: 0.8rem;
+                text-align: center;
+                padding: 1rem;
+                border-radius: 4px;
+                pointer-events: none;
+            }
+            .vid-wrapper.is-buffering .buffering-overlay {
+                display: flex;
+            }
 
-  /* Filter controls */
-  .filter-bar {
-    text-align: center; margin-bottom: 1rem;
-  }
-  .filter-bar label {
-    margin: 0 0.75rem; cursor: pointer; font-size: 0.85rem;
-  }
-  .filter-bar input[type="checkbox"] { margin-right: 0.3rem; vertical-align: middle; }
+            /* Filter controls */
+            .filter-bar {
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+            .filter-bar label {
+                margin: 0 0.75rem;
+                cursor: pointer;
+                font-size: 0.85rem;
+            }
+            .filter-bar input[type="checkbox"] {
+                margin-right: 0.3rem;
+                vertical-align: middle;
+            }
 
-  @media (max-width: 900px) {
-    .videos { grid-template-columns: 1fr; }
-    .vid-col:not(:last-child) { border-right: none; border-bottom: 1px solid #21262d; }
-    body { padding: 1rem; padding-top: 0; }
-  }
-</style>
-</head>
-<body>
-<h1>Video Comparison</h1>
-<p class="subtitle">
-  <strong style="color:#58a6ff">Original</strong>: Lightning 4-step, no CFG &nbsp;|&nbsp;
-  <strong style="color:#3fb950">Ours + CFG</strong>: Lightning 4-step, CFG 1.4 &nbsp;|&nbsp;
-  <strong style="color:#f78166">Fal API</strong>: 27-step (Wan 2.2 A14B)
-</p>
-<div class="controls">
-  <button onclick="playVisible()">&#9654; Play Visible</button>
-  <button onclick="pauseAll()">&#9646;&#9646; Pause All</button>
-  <button onclick="resetAll()">&#8634; Reset All</button>
-</div>
-<div class="filter-bar">
-  <label><input type="checkbox" id="showOriginal" checked onchange="updateVisibility()"> <span style="color:#58a6ff">Original</span></label>
-  <label><input type="checkbox" id="showOurs" checked onchange="updateVisibility()"> <span style="color:#3fb950">Ours + CFG</span></label>
-  <label><input type="checkbox" id="showFal" checked onchange="updateVisibility()"> <span style="color:#f78166">Fal API</span></label>
-</div>
-<div id="cards"></div>
+            /* Toggle pill style */
+            .toggle-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                padding: 0.3rem 0.75rem;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 0.85rem;
+                transition:
+                    background 0.15s,
+                    opacity 0.15s;
+                border: 1px solid #30363d;
+                background: #21262d;
+                margin: 0 0.3rem;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .toggle-pill:hover {
+                background: #30363d;
+            }
+            .toggle-pill.off {
+                opacity: 0.4;
+            }
+            .toggle-pill input[type="checkbox"] {
+                display: none;
+            }
+            .toggle-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                display: inline-block;
+            }
 
-<script>
-const BASE = ".";
-const PROMPTS = [
-  "Sunny lighting, edge lighting, low-contrast, medium close-up shot, left-heavy composition, clean single shot, warm colors, soft lighting, side lighting, day time. A young girl sits in a field of tall grass with two fluffy donkeys standing behind her.",
-  "Artificial lighting, edge lighting, desaturated colors, warm colors, right-heavy composition, over-the-shoulder shot, The camera focuses on a young woman with Western features, dressed in a blue and white checkered shirt. Her features are striking, and her eyes are bright and attentive.",
-  "Moonlighting. A young woman is positioned in an old-style room against a backdrop of a speckled tile wall and an aged wooden door. She has a sharp, black bob haircut, with fine, slender eyebrows. Her blue eyes, under the weak moonlight, seem particularly profound.",
-  "Practical lighting, underlighting, high contrast lighting, night time, warm colors, low angle shot, medium close-up shot, two shot. The scene is dimly lit. A Caucasian woman is seated on the edge of a bed, dressed in a white T-shirt emblazoned with the black text \"HUMMER & ELLIS\".",
-  "Firelighting, Over-the-shoulder shot. A man in a white shirt and brown vest stands by a fireplace, looking at someone to the right.",
-  "Fluorescent lighting, In a long, narrow corridor flanked by blue metal lockers, a young woman is standing. She has long, dark hair that falls over her forehead in bangs and is dressed in a checkered shirt.",
-  "Overcast lighting, medium lens, soft lighting, low contrast lighting, edge lighting, low angle shot, desaturated colors, medium close-up shot, clean single shot, cool colors, center composition. The camera captures a low-angle close-up of a Western man outdoors.",
-  "Mixed lighting, contrast, underlighting, short-side composition, night time, mixed colors, close-up shot, low angle shot, side lighting, cool colors. In a dimly lit room, a man stands silhouetted against a projection screen.",
-  "Sunny lighting, sunset time, warm colors, medium shot, desaturated colors, daylight, side lighting. Sunlight streams into a kitchen where a man is preparing food.",
-  "Soft lighting, sunset time, side lighting, edge lighting, warm colors, desaturated colors, center composition, medium close-up shot, eye-level shot. A couple stands next to a yellow taxi in a medium shot.",
-  "Hard lighting, side lighting, medium shot, desaturated colors, high contrast lighting, medium lens. An eye-level, close-up shot of a Western man. He is wearing a striped shirt and is sitting at a wooden desk.",
-  "Top lighting, clean single shot, long lens, extreme close-up shot. An eye-level, extreme close-up of a Caucasian woman's face. She has brown hair and eyebrows. Her green eyes are wide open, bulging outward.",
-  "Side lighting, edge lighting, soft lighting, medium close-up shot, dusk time, sunset time, center composition, warm colors, desaturated colors, long lens. A woman with fluffy brown curly hair stands elegantly in front of a magnificent stained-glass window.",
-  "Medium lens, soft lighting, low contrast lighting, medium shot, daylight, backlighting, clean single shot. In a full, eye-level shot, a Caucasian man is lying on the floor.",
-  "Underlighting, dawn time, firelight, warm colors, low contrast lighting, backlighting, three shot. In a dark background, an eye-level close-up shot captures a Western woman.",
-  "Edge lighting, dusk time, sunset time, side lighting, medium shot, center composition, warm colors, soft lighting, desaturated colors, clean two shot. In the frame, a Western man wearing a yellow short-sleeved shirt stands in the center foreground.",
-  "Silhouette lighting, dusk time, mixed colors, wide shot, firelight, establishing shot, high contrast lighting. The video follows a runner through different terrains.",
-  "Low contrast lighting. In a retro 70s-style subway station, a street musician plays amidst dim colors and gritty textures.",
-  "High contrast lighting, saturated colors, short-side composition, sunset time, medium lens, soft lighting, backlighting, warm colors, edge lighting, medium close-up shot, daylight, sunny lighting. A close-up of a Caucasian woman in a yellow checkered dress.",
-  "Sunrise time, daylight, soft lighting, side lighting, edge lighting, medium close-up shot, center composition, warm colors. A Caucasian woman is sitting on a large white bed, wearing a blue and white checkered cotton top.",
-  "Night time, practical lighting, saturated colors, mixed lighting, top lighting, soft lighting, wide shot, symmetrical composition, wide-angle lens. In dim lighting, an eye-level wide shot shows two foreigners sitting at a table and conversing.",
-  "Dusk time, soft lighting, side lighting, desaturated colors, cool colors, center composition, medium close-up shot. As twilight deepens on a deserted city street, a petite girl stands alone.",
-  "Sunset time, side lighting, edge lighting, soft lighting, cool colors, medium shot, center composition, clean single shot. A tall, fair-skinned foreign man, dressed in a sharply tailored dark gray suit, sits upright in a car.",
-  "Dawn time, firelight, left-weighted composition, cool colors, low contrast lighting, high angle shot. In the video, the camera slowly pushes in for a close-up on the archer's eyes and the arrowhead.",
-  "Sunrise time, side lighting, edge lighting, medium close-up shot, center composition, soft lighting, warm colors, desaturated colors, sunny lighting. In front of the camera is an elderly foreign man with a wrinkled face.",
-  "An extreme close-up shot of a foreign man's face. He has blue eyes and a shaved head, his face is covered in sweat. He stares at the camera, then lowers his head.",
-  "Close-up shot, edge lighting, daylight, soft lighting, desaturated colors, center composition, daylight. In an eye-level shot, three figures compose the frame. In the center is a foreign boy in a red school uniform.",
-  "Medium shot, edge lighting, daylight, side lighting, daylight, center composition. A slightly disheveled foreign man, wearing a light blue shirt with a black pinstripe tie, stands in front of a dark blue wall.",
-  "Medium close-up shot. An elderly Caucasian man is sitting indoors, conversing with another person. He is wearing a dark blue jacket over a white shirt and a black sweater.",
-  "A male photographer, wearing a dark green windbreaker and carrying a camera bag, holds a professional DSLR camera and is slowly walking deep into a forest on an overcast day.",
-  "On a night ravaged by a blizzard, the convenience store is warm and quiet. The young cashier, wearing a simple work uniform, warms his hands with his breath.",
-  "Wide-angle lens, center composition, saturated colors, extreme wide shot, backlighting, establishing shot, practical lighting, warm colors. In a sunlit Roman square, actors dressed in togas are arguing.",
-  "Center composition, soft lighting, warm colors, medium close-up shot, dusk time, sunny lighting, edge lighting. The camera slowly pushes in for a close-up on the face of a distinguished elderly gentleman.",
-  "Balanced composition, saturated colors, medium lens, soft lighting, warm colors, low contrast lighting, medium shot, fluorescent lighting, two shot. In a supermarket, there is an eye-level close-up of a foreign man and woman.",
-  "Left-weighted composition, over-the-shoulder shot, close-up shot, medium lens, soft lighting, low contrast lighting, overcast lighting, clean single shot. An eye-level close-up shows a foreign woman walking in a garden.",
-  "Symmetrical composition, soft lighting, backlighting, low contrast lighting, sunny lighting, medium wide shot, daylight, wide-angle lens. In a green grassy field, a man walks forward with his back to the camera.",
-  "Short-side composition, close-up shot, medium lens, soft lighting, low contrast lighting, desaturated colors, daylight, side lighting, clean single shot. An eye-level close-up of a foreign girl's head.",
-  "Medium lens, two shot, warm colors, over-the-shoulder shot, high contrast lighting. An eye-level close-up of a foreign girl wearing a red and black striped sweater.",
-  "A ragged wanderer is curled up in the corner of an abandoned factory, next to rust-streaked metal pipes. The shot is a wide lens, showing geometric composition.",
-  "Long-focus lens, close-up shot, soft lighting, daylight, side lighting, sunny lighting, clean single shot, cool colors, center composition. An eye-level close-up of a foreign man's face.",
-  "Telephoto lens. A tiger walking through the jungle. The camera follows the tiger smoothly, keeping it in the center of the frame as the muscles ripple slowly beneath its striped fur.",
-  "Fisheye lens, balanced composition, top lighting, warm colors, low contrast lighting, group shot. In a low-angle close-up, a group of Caucasian men and women are gathered around a circular hole.",
-  "Over-the-shoulder shot, two shot, telephoto lens, warm colors, high contrast lighting, soft lighting, daylight, close-up shot, center composition. In an eye-level shot, a foreign girl sits by a window.",
-  "High angle shot, daylight, fisheye lens, clean single shot, mixed colors, daylight, top-down shot. A foreign man sitting in the back seat of an orange taxi.",
-  "Low angle shot, medium close-up shot, soft lighting, warm colors, daylight, center composition, clean single shot. A tall foreign man with short blond hair is wearing a well-tailored dark suit.",
-  "Dutch angle shot, high contrast lighting, mixed lighting, night time, top lighting, medium shot, high angle shot, fisheye lens, fluorescent lighting. In a dimly lit elevator, a blonde woman stands in front of a mirror.",
-  "Aerial shot, warm colors, extreme wide shot, sunny lighting, hard lighting, daylight, establishing shot. In a desolate desert, a black SUV speeds along a highway.",
-  "High angle shot, night time, medium lens, soft lighting, warm colors, low contrast lighting, desaturated colors, artificial lighting, two shot. A foreign man and a foreign woman are lying on a sofa.",
-  "Clean single shot, close-up shot, high angle shot, top lighting, soft lighting, dawn time, low contrast lighting, desaturated colors, daylight, telephoto lens, fluorescent lighting, cool colors. In water, a woman is floating on her back.",
-  "Two shot, daylight, soft lighting, side lighting, medium shot, over-the-shoulder shot, right-weighted composition, medium lens, warm colors. A close-up of a foreign man wearing a dark suit speaking to a woman.",
-  "Three shot, practical lighting, saturated colors, balanced composition, night time, top lighting, soft lighting, warm colors, medium lens, low contrast lighting, medium shot, artificial lighting. Three foreigners in formal wear.",
-  "Group shot, medium lens, soft lighting, warm colors, firelight. In a dimly lit church, an eye-level close-up shot shows a foreign woman wearing a black robe holding a candle.",
-  "Establishing shot, high contrast lighting, hard lighting. In a black and white alley, rainwater glistens on the road surface under a streetlamp. A figure in a trench coat walks into the frame.",
-  "Warm colors, left-weighted composition, sunset time, soft lighting, medium close-up shot. A foreign woman wearing a dark brown wool coat with a fur collar is sitting on a wooden bench.",
-  "Cool colors, rim lighting, close-up shot, desaturated colors, soft lighting, night time, overcast lighting. A young boy is lying on white sheets, his head tilted slightly back.",
-  "Saturated colors, center composition. A foreign man in a black coat with a thick beard is surrounded by faintly glowing candles and green plants.",
-  "Desaturated colors, rim lighting, close-up shot, soft lighting, cool colors, center composition, eye-level shot. An elderly foreign man wearing a black wide-brimmed hat.",
-  "A group of diverse, energetic hip-hop dancers performing street dance on a vast stage, illuminated by vibrant neon lights. Synchronized dance moves with rim light effects.",
-  "A sprinter, his face distorted from extreme exertion, wearing professional spikes. At the finish line of a 100-meter dash, he is sprinting at full power with astonishing speed.",
-  "In an urban skate park, a skater accelerates alongside a graffiti-covered wall, then suddenly pops the tail of his board for an ollie, launching into the air to clear a low wall.",
-  "In a low-angle wide shot, a man and a woman are playing soccer. Documentary photography style, full of movement and vitality. Standing in front of a white building.",
-  "A foreign woman is dressed in a white tennis outfit, wearing a sparkling necklace, with her hair in a high ponytail. She swings her arm rapidly, connecting with the incoming tennis ball.",
-  "An eye-level close-up shot captures an indoor table tennis match. Two foreign men are engaged in an intense game. One man in an orange shirt swings his paddle.",
-  "This captures the moment a snowboarder completes a high-difficulty aerial spin in a U-shaped pipe. Follow-cam perspective with a wide-angle lens.",
-  "This slow-motion, close-up video captures a moment of power and beauty on the basketball court. A player wearing a No. 11 yellow, white, and blue jersey executes a two-handed dunk.",
-  "On a muddy rugby field, an athlete wearing a black uniform with orange-red stripes is sprinting at full power. He leaps, clutching the rugby ball tightly.",
-  "Dusk time, soft lighting, side lighting, medium long shot, balanced composition, warm colors. A graceful Mongolian woman is performing the bowl dance on a vast grassland with porcelain bowls.",
-  "On the wing of a jet plane flying at high altitude, a performer in a red and white gymnastics suit performs an aerial cartwheel and lands steadily on the edge of the metal wing.",
-  "A battle-hardened warrior, his face and body covered in mud and wounds, is wearing heavy leather armor. He stands alone on a muddy battlefield, staring angrily ahead in the rain.",
-  "In a dark room, only the faint light from a phone screen illuminates a young woman's face. Her pupils are dilated with extreme fear, and her lips are slightly parted.",
-  "A kind-faced old man, wearing a straw hat and overalls, stands in a sunny vegetable garden. He is holding a ripe tomato and is very happy, his eyes shining with pure happiness.",
-  "By the car window on a rainy day, a young man leans against the cold glass. His gaze is empty and unfocused as he stares sadly outside. A single tear slips from his reddened eye.",
-  "A young girl pushes open a door, a surprised expression on her face as she sees a completely unexpected scene.",
-  "In a dimly lit room, a detective sits at his desk and opens a file folder. The camera pushes in for a close-up as his pupils contract and his expression becomes tense.",
-  "A soft, round animated character wakes up to find their bed is a giant golden corn kernel. The camera pulls back, revealing that the room is a giant corn silo.",
-  "A visitor is standing in front of a painting, admiring it. The camera pans to the right, following her steps, to reveal a series of paintings in a unified style hanging on the wall.",
-  "A display window on a commercial street. The camera moves to the left, slowly panning across the window of a luxury store, then reveals a homeless person in the corner of an alley.",
-  "A little girl lost in New York's Times Square looks up. The camera tilts up from the ground to reveal massive, glittering skyscrapers and billboards.",
-  "Fashion magazine, motion blur, handheld camera, a close-up photo of a group of 18-year-old hippie goths at a warehouse party, horror movie style, hyper-realistic.",
-  "A drone shot, performing a rapid fly-through. Starts inside a circular pipe, then shoots upward to reveal a vast polar snowfield at sunrise. A blue hot air balloon with \"CNG\" rises.",
-  "Impressionistic style, watercolor style. A fox slowly moves through a forest. Its form appears to be dissolving, seamlessly blending with the blurry forest background.",
-  "Backlight, medium shot, sunset time, arc shot. The camera follows a cowboy from behind, arcing to reveal his front as he grips his holster in a desolate Western ghost town.",
-  "Felt style, golden hour sunlight. A whimsical village is nestled at the base of a giant, hollow tree trunk. Little felt gnomes in woolen hats drive a miniature wooden train.",
-  "3D cartoon style, a surreal dream where everything is made of corn. Main characters ride a corn train through giant corncobs and kernels. Bathed in warm, golden light.",
-  "Pixel art style. In a colorful universe, a player-controlled pixel character is in dialogue with a friendly alien creature with a rounded body and large eyes.",
-  "Puppet animation. In a dimly lit Victorian-style living room, felt and wooden puppets are seated around a round table, their silhouettes cast by flickering candlelight.",
-  "In a 3D game scene, a vine bridge on a floating island sways in the morning mist. A silver-haired elven archer draws her bow to its full extent. Epic atmosphere.",
-  "In a claymation style, a miniature fairy village constructed from acorns, tree bark, and moss is hidden within the crevice of an ancient tree root.",
-  "In a 2D anime style, a magic circle spins and expands beneath the character's feet, with runes orbiting it. It fires a rainbow beam that leaves a star-shaped trail.",
-  "Watercolor painting style. An azure water surface and lush green islands in the style of 3D paper cutouts. A small origami boat glides smoothly, causing realistic ripples.",
-  "Black and white animation segment. A wedding takes place inside a moving train carriage. The train jolts, and the cake and bouquets tumble down. Exaggerated shock.",
-  "In an oil painting style, a vast sea of sunflowers unfolds with bold, thick brushstrokes. Deep blue sky creates a contrast. Swarms of bees dance among the flowers.",
-  "Tilt-shift photography, high-angle shot overlooking a bustling city intersection. Vehicles and pedestrians interweave like a tapestry in a magical, miniature world.",
-  "Time-lapse, dusk, sunset. An anthropomorphic metal robot walks down a busy city street. Its shell has a silver-gray sheen with fine mechanical textures."
-];
+            @media (max-width: 900px) {
+                .videos {
+                    grid-template-columns: 1fr;
+                }
+                .vid-col:not(:last-child) {
+                    border-right: none;
+                    border-bottom: 1px solid #21262d;
+                }
+                body {
+                    padding: 1rem;
+                    padding-top: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Video Comparison</h1>
+        <p class="subtitle">
+            <strong style="color: #58a6ff">Original</strong>: Lightning 4-step,
+            no guidance &nbsp;|&nbsp;
+            <strong style="color: #3fb950">Ours + CFG</strong>: Lightning
+            4-step, CFG 1.4 &nbsp;|&nbsp;
+            <strong style="color: #d2a8ff">Ours + NAG</strong>: Lightning
+            4-step, NAG 7.0 &nbsp;|&nbsp;
+            <strong style="color: #f78166">Fal API</strong>: 27-step (Wan 2.2
+            A14B)
+        </p>
+        <div class="controls">
+            <button onclick="playVisible()">&#9654; Play Visible</button>
+            <button onclick="pauseAll()">&#9646;&#9646; Pause All</button>
+            <button onclick="resetAll()">&#8634; Reset All</button>
+        </div>
+        <div class="filter-bar" id="filterBar">
+            <label class="toggle-pill" data-source="original">
+                <input
+                    type="checkbox"
+                    id="showOriginal"
+                    checked
+                    onchange="updateVisibility()"
+                />
+                <span class="toggle-dot" style="background: #58a6ff"></span>
+                <span style="color: #58a6ff">Original</span>
+            </label>
+            <label class="toggle-pill off" data-source="ours">
+                <input
+                    type="checkbox"
+                    id="showOurs"
+                    onchange="updateVisibility()"
+                />
+                <span class="toggle-dot" style="background: #3fb950"></span>
+                <span style="color: #3fb950">Ours + CFG</span>
+            </label>
+            <label class="toggle-pill" data-source="nag">
+                <input
+                    type="checkbox"
+                    id="showNag"
+                    checked
+                    onchange="updateVisibility()"
+                />
+                <span class="toggle-dot" style="background: #d2a8ff"></span>
+                <span style="color: #d2a8ff">Ours + NAG</span>
+            </label>
+            <label class="toggle-pill" data-source="fal">
+                <input
+                    type="checkbox"
+                    id="showFal"
+                    checked
+                    onchange="updateVisibility()"
+                />
+                <span class="toggle-dot" style="background: #f78166"></span>
+                <span style="color: #f78166">Fal API</span>
+            </label>
+        </div>
+        <div id="cards"></div>
 
-const SOURCES = [
-  { key: "original", label: "Original (no CFG)", cls: "original", folder: "my_test_videos" },
-  { key: "ours",     label: "Ours + CFG 1.4",    cls: "ours",     folder: "new_my_test_videos" },
-  { key: "fal",      label: "Fal API (27-step)",  cls: "fal",      folder: "fal_test_videos" },
-];
+        <script>
+            const BASE =
+                ".";
+            const PROMPTS = [
+                "Sunny lighting, edge lighting, low-contrast, medium close-up shot, left-heavy composition, clean single shot, warm colors, soft lighting, side lighting, day time. A young girl sits in a field of tall grass with two fluffy donkeys standing behind her.",
+                "Artificial lighting, edge lighting, desaturated colors, warm colors, right-heavy composition, over-the-shoulder shot, The camera focuses on a young woman with Western features, dressed in a blue and white checkered shirt. Her features are striking, and her eyes are bright and attentive.",
+                "Moonlighting. A young woman is positioned in an old-style room against a backdrop of a speckled tile wall and an aged wooden door. She has a sharp, black bob haircut, with fine, slender eyebrows. Her blue eyes, under the weak moonlight, seem particularly profound.",
+                'Practical lighting, underlighting, high contrast lighting, night time, warm colors, low angle shot, medium close-up shot, two shot. The scene is dimly lit. A Caucasian woman is seated on the edge of a bed, dressed in a white T-shirt emblazoned with the black text "HUMMER & ELLIS".',
+                "Firelighting, Over-the-shoulder shot. A man in a white shirt and brown vest stands by a fireplace, looking at someone to the right.",
+                "Fluorescent lighting, In a long, narrow corridor flanked by blue metal lockers, a young woman is standing. She has long, dark hair that falls over her forehead in bangs and is dressed in a checkered shirt.",
+                "Overcast lighting, medium lens, soft lighting, low contrast lighting, edge lighting, low angle shot, desaturated colors, medium close-up shot, clean single shot, cool colors, center composition. The camera captures a low-angle close-up of a Western man outdoors.",
+                "Mixed lighting, contrast, underlighting, short-side composition, night time, mixed colors, close-up shot, low angle shot, side lighting, cool colors. In a dimly lit room, a man stands silhouetted against a projection screen.",
+                "Sunny lighting, sunset time, warm colors, medium shot, desaturated colors, daylight, side lighting. Sunlight streams into a kitchen where a man is preparing food.",
+                "Soft lighting, sunset time, side lighting, edge lighting, warm colors, desaturated colors, center composition, medium close-up shot, eye-level shot. A couple stands next to a yellow taxi in a medium shot.",
+                "Hard lighting, side lighting, medium shot, desaturated colors, high contrast lighting, medium lens. An eye-level, close-up shot of a Western man. He is wearing a striped shirt and is sitting at a wooden desk.",
+                "Top lighting, clean single shot, long lens, extreme close-up shot. An eye-level, extreme close-up of a Caucasian woman's face. She has brown hair and eyebrows. Her green eyes are wide open, bulging outward.",
+                "Side lighting, edge lighting, soft lighting, medium close-up shot, dusk time, sunset time, center composition, warm colors, desaturated colors, long lens. A woman with fluffy brown curly hair stands elegantly in front of a magnificent stained-glass window.",
+                "Medium lens, soft lighting, low contrast lighting, medium shot, daylight, backlighting, clean single shot. In a full, eye-level shot, a Caucasian man is lying on the floor.",
+                "Underlighting, dawn time, firelight, warm colors, low contrast lighting, backlighting, three shot. In a dark background, an eye-level close-up shot captures a Western woman.",
+                "Edge lighting, dusk time, sunset time, side lighting, medium shot, center composition, warm colors, soft lighting, desaturated colors, clean two shot. In the frame, a Western man wearing a yellow short-sleeved shirt stands in the center foreground.",
+                "Silhouette lighting, dusk time, mixed colors, wide shot, firelight, establishing shot, high contrast lighting. The video follows a runner through different terrains.",
+                "Low contrast lighting. In a retro 70s-style subway station, a street musician plays amidst dim colors and gritty textures.",
+                "High contrast lighting, saturated colors, short-side composition, sunset time, medium lens, soft lighting, backlighting, warm colors, edge lighting, medium close-up shot, daylight, sunny lighting. A close-up of a Caucasian woman in a yellow checkered dress.",
+                "Sunrise time, daylight, soft lighting, side lighting, edge lighting, medium close-up shot, center composition, warm colors. A Caucasian woman is sitting on a large white bed, wearing a blue and white checkered cotton top.",
+                "Night time, practical lighting, saturated colors, mixed lighting, top lighting, soft lighting, wide shot, symmetrical composition, wide-angle lens. In dim lighting, an eye-level wide shot shows two foreigners sitting at a table and conversing.",
+                "Dusk time, soft lighting, side lighting, desaturated colors, cool colors, center composition, medium close-up shot. As twilight deepens on a deserted city street, a petite girl stands alone.",
+                "Sunset time, side lighting, edge lighting, soft lighting, cool colors, medium shot, center composition, clean single shot. A tall, fair-skinned foreign man, dressed in a sharply tailored dark gray suit, sits upright in a car.",
+                "Dawn time, firelight, left-weighted composition, cool colors, low contrast lighting, high angle shot. In the video, the camera slowly pushes in for a close-up on the archer's eyes and the arrowhead.",
+                "Sunrise time, side lighting, edge lighting, medium close-up shot, center composition, soft lighting, warm colors, desaturated colors, sunny lighting. In front of the camera is an elderly foreign man with a wrinkled face.",
+                "An extreme close-up shot of a foreign man's face. He has blue eyes and a shaved head, his face is covered in sweat. He stares at the camera, then lowers his head.",
+                "Close-up shot, edge lighting, daylight, soft lighting, desaturated colors, center composition, daylight. In an eye-level shot, three figures compose the frame. In the center is a foreign boy in a red school uniform.",
+                "Medium shot, edge lighting, daylight, side lighting, daylight, center composition. A slightly disheveled foreign man, wearing a light blue shirt with a black pinstripe tie, stands in front of a dark blue wall.",
+                "Medium close-up shot. An elderly Caucasian man is sitting indoors, conversing with another person. He is wearing a dark blue jacket over a white shirt and a black sweater.",
+                "A male photographer, wearing a dark green windbreaker and carrying a camera bag, holds a professional DSLR camera and is slowly walking deep into a forest on an overcast day.",
+                "On a night ravaged by a blizzard, the convenience store is warm and quiet. The young cashier, wearing a simple work uniform, warms his hands with his breath.",
+                "Wide-angle lens, center composition, saturated colors, extreme wide shot, backlighting, establishing shot, practical lighting, warm colors. In a sunlit Roman square, actors dressed in togas are arguing.",
+                "Center composition, soft lighting, warm colors, medium close-up shot, dusk time, sunny lighting, edge lighting. The camera slowly pushes in for a close-up on the face of a distinguished elderly gentleman.",
+                "Balanced composition, saturated colors, medium lens, soft lighting, warm colors, low contrast lighting, medium shot, fluorescent lighting, two shot. In a supermarket, there is an eye-level close-up of a foreign man and woman.",
+                "Left-weighted composition, over-the-shoulder shot, close-up shot, medium lens, soft lighting, low contrast lighting, overcast lighting, clean single shot. An eye-level close-up shows a foreign woman walking in a garden.",
+                "Symmetrical composition, soft lighting, backlighting, low contrast lighting, sunny lighting, medium wide shot, daylight, wide-angle lens. In a green grassy field, a man walks forward with his back to the camera.",
+                "Short-side composition, close-up shot, medium lens, soft lighting, low contrast lighting, desaturated colors, daylight, side lighting, clean single shot. An eye-level close-up of a foreign girl's head.",
+                "Medium lens, two shot, warm colors, over-the-shoulder shot, high contrast lighting. An eye-level close-up of a foreign girl wearing a red and black striped sweater.",
+                "A ragged wanderer is curled up in the corner of an abandoned factory, next to rust-streaked metal pipes. The shot is a wide lens, showing geometric composition.",
+                "Long-focus lens, close-up shot, soft lighting, daylight, side lighting, sunny lighting, clean single shot, cool colors, center composition. An eye-level close-up of a foreign man's face.",
+                "Telephoto lens. A tiger walking through the jungle. The camera follows the tiger smoothly, keeping it in the center of the frame as the muscles ripple slowly beneath its striped fur.",
+                "Fisheye lens, balanced composition, top lighting, warm colors, low contrast lighting, group shot. In a low-angle close-up, a group of Caucasian men and women are gathered around a circular hole.",
+                "Over-the-shoulder shot, two shot, telephoto lens, warm colors, high contrast lighting, soft lighting, daylight, close-up shot, center composition. In an eye-level shot, a foreign girl sits by a window.",
+                "High angle shot, daylight, fisheye lens, clean single shot, mixed colors, daylight, top-down shot. A foreign man sitting in the back seat of an orange taxi.",
+                "Low angle shot, medium close-up shot, soft lighting, warm colors, daylight, center composition, clean single shot. A tall foreign man with short blond hair is wearing a well-tailored dark suit.",
+                "Dutch angle shot, high contrast lighting, mixed lighting, night time, top lighting, medium shot, high angle shot, fisheye lens, fluorescent lighting. In a dimly lit elevator, a blonde woman stands in front of a mirror.",
+                "Aerial shot, warm colors, extreme wide shot, sunny lighting, hard lighting, daylight, establishing shot. In a desolate desert, a black SUV speeds along a highway.",
+                "High angle shot, night time, medium lens, soft lighting, warm colors, low contrast lighting, desaturated colors, artificial lighting, two shot. A foreign man and a foreign woman are lying on a sofa.",
+                "Clean single shot, close-up shot, high angle shot, top lighting, soft lighting, dawn time, low contrast lighting, desaturated colors, daylight, telephoto lens, fluorescent lighting, cool colors. In water, a woman is floating on her back.",
+                "Two shot, daylight, soft lighting, side lighting, medium shot, over-the-shoulder shot, right-weighted composition, medium lens, warm colors. A close-up of a foreign man wearing a dark suit speaking to a woman.",
+                "Three shot, practical lighting, saturated colors, balanced composition, night time, top lighting, soft lighting, warm colors, medium lens, low contrast lighting, medium shot, artificial lighting. Three foreigners in formal wear.",
+                "Group shot, medium lens, soft lighting, warm colors, firelight. In a dimly lit church, an eye-level close-up shot shows a foreign woman wearing a black robe holding a candle.",
+                "Establishing shot, high contrast lighting, hard lighting. In a black and white alley, rainwater glistens on the road surface under a streetlamp. A figure in a trench coat walks into the frame.",
+                "Warm colors, left-weighted composition, sunset time, soft lighting, medium close-up shot. A foreign woman wearing a dark brown wool coat with a fur collar is sitting on a wooden bench.",
+                "Cool colors, rim lighting, close-up shot, desaturated colors, soft lighting, night time, overcast lighting. A young boy is lying on white sheets, his head tilted slightly back.",
+                "Saturated colors, center composition. A foreign man in a black coat with a thick beard is surrounded by faintly glowing candles and green plants.",
+                "Desaturated colors, rim lighting, close-up shot, soft lighting, cool colors, center composition, eye-level shot. An elderly foreign man wearing a black wide-brimmed hat.",
+                "A group of diverse, energetic hip-hop dancers performing street dance on a vast stage, illuminated by vibrant neon lights. Synchronized dance moves with rim light effects.",
+                "A sprinter, his face distorted from extreme exertion, wearing professional spikes. At the finish line of a 100-meter dash, he is sprinting at full power with astonishing speed.",
+                "In an urban skate park, a skater accelerates alongside a graffiti-covered wall, then suddenly pops the tail of his board for an ollie, launching into the air to clear a low wall.",
+                "In a low-angle wide shot, a man and a woman are playing soccer. Documentary photography style, full of movement and vitality. Standing in front of a white building.",
+                "A foreign woman is dressed in a white tennis outfit, wearing a sparkling necklace, with her hair in a high ponytail. She swings her arm rapidly, connecting with the incoming tennis ball.",
+                "An eye-level close-up shot captures an indoor table tennis match. Two foreign men are engaged in an intense game. One man in an orange shirt swings his paddle.",
+                "This captures the moment a snowboarder completes a high-difficulty aerial spin in a U-shaped pipe. Follow-cam perspective with a wide-angle lens.",
+                "This slow-motion, close-up video captures a moment of power and beauty on the basketball court. A player wearing a No. 11 yellow, white, and blue jersey executes a two-handed dunk.",
+                "On a muddy rugby field, an athlete wearing a black uniform with orange-red stripes is sprinting at full power. He leaps, clutching the rugby ball tightly.",
+                "Dusk time, soft lighting, side lighting, medium long shot, balanced composition, warm colors. A graceful Mongolian woman is performing the bowl dance on a vast grassland with porcelain bowls.",
+                "On the wing of a jet plane flying at high altitude, a performer in a red and white gymnastics suit performs an aerial cartwheel and lands steadily on the edge of the metal wing.",
+                "A battle-hardened warrior, his face and body covered in mud and wounds, is wearing heavy leather armor. He stands alone on a muddy battlefield, staring angrily ahead in the rain.",
+                "In a dark room, only the faint light from a phone screen illuminates a young woman's face. Her pupils are dilated with extreme fear, and her lips are slightly parted.",
+                "A kind-faced old man, wearing a straw hat and overalls, stands in a sunny vegetable garden. He is holding a ripe tomato and is very happy, his eyes shining with pure happiness.",
+                "By the car window on a rainy day, a young man leans against the cold glass. His gaze is empty and unfocused as he stares sadly outside. A single tear slips from his reddened eye.",
+                "A young girl pushes open a door, a surprised expression on her face as she sees a completely unexpected scene.",
+                "In a dimly lit room, a detective sits at his desk and opens a file folder. The camera pushes in for a close-up as his pupils contract and his expression becomes tense.",
+                "A soft, round animated character wakes up to find their bed is a giant golden corn kernel. The camera pulls back, revealing that the room is a giant corn silo.",
+                "A visitor is standing in front of a painting, admiring it. The camera pans to the right, following her steps, to reveal a series of paintings in a unified style hanging on the wall.",
+                "A display window on a commercial street. The camera moves to the left, slowly panning across the window of a luxury store, then reveals a homeless person in the corner of an alley.",
+                "A little girl lost in New York's Times Square looks up. The camera tilts up from the ground to reveal massive, glittering skyscrapers and billboards.",
+                "Fashion magazine, motion blur, handheld camera, a close-up photo of a group of 18-year-old hippie goths at a warehouse party, horror movie style, hyper-realistic.",
+                'A drone shot, performing a rapid fly-through. Starts inside a circular pipe, then shoots upward to reveal a vast polar snowfield at sunrise. A blue hot air balloon with "CNG" rises.',
+                "Impressionistic style, watercolor style. A fox slowly moves through a forest. Its form appears to be dissolving, seamlessly blending with the blurry forest background.",
+                "Backlight, medium shot, sunset time, arc shot. The camera follows a cowboy from behind, arcing to reveal his front as he grips his holster in a desolate Western ghost town.",
+                "Felt style, golden hour sunlight. A whimsical village is nestled at the base of a giant, hollow tree trunk. Little felt gnomes in woolen hats drive a miniature wooden train.",
+                "3D cartoon style, a surreal dream where everything is made of corn. Main characters ride a corn train through giant corncobs and kernels. Bathed in warm, golden light.",
+                "Pixel art style. In a colorful universe, a player-controlled pixel character is in dialogue with a friendly alien creature with a rounded body and large eyes.",
+                "Puppet animation. In a dimly lit Victorian-style living room, felt and wooden puppets are seated around a round table, their silhouettes cast by flickering candlelight.",
+                "In a 3D game scene, a vine bridge on a floating island sways in the morning mist. A silver-haired elven archer draws her bow to its full extent. Epic atmosphere.",
+                "In a claymation style, a miniature fairy village constructed from acorns, tree bark, and moss is hidden within the crevice of an ancient tree root.",
+                "In a 2D anime style, a magic circle spins and expands beneath the character's feet, with runes orbiting it. It fires a rainbow beam that leaves a star-shaped trail.",
+                "Watercolor painting style. An azure water surface and lush green islands in the style of 3D paper cutouts. A small origami boat glides smoothly, causing realistic ripples.",
+                "Black and white animation segment. A wedding takes place inside a moving train carriage. The train jolts, and the cake and bouquets tumble down. Exaggerated shock.",
+                "In an oil painting style, a vast sea of sunflowers unfolds with bold, thick brushstrokes. Deep blue sky creates a contrast. Swarms of bees dance among the flowers.",
+                "Tilt-shift photography, high-angle shot overlooking a bustling city intersection. Vehicles and pedestrians interweave like a tapestry in a magical, miniature world.",
+                "Time-lapse, dusk, sunset. An anthropomorphic metal robot walks down a busy city street. Its shell has a silver-gray sheen with fine mechanical textures.",
+            ];
 
-function escapeHtml(s) {
-  const el = document.createElement("span");
-  el.textContent = s;
-  return el.innerHTML;
-}
+            const SOURCES = [
+                {
+                    key: "original",
+                    label: "Original (no guidance)",
+                    cls: "original",
+                    folder: "my_test_videos",
+                    checkboxId: "showOriginal",
+                },
+                {
+                    key: "ours",
+                    label: "Ours + CFG 1.4",
+                    cls: "ours",
+                    folder: "new_my_test_videos",
+                    checkboxId: "showOurs",
+                },
+                {
+                    key: "nag",
+                    label: "Ours + NAG 7.0",
+                    cls: "nag",
+                    folder: "nag_my_test_videos",
+                    checkboxId: "showNag",
+                },
+                {
+                    key: "fal",
+                    label: "Fal API (27-step)",
+                    cls: "fal",
+                    folder: "fal_test_videos",
+                    checkboxId: "showFal",
+                },
+            ];
 
-function pad3(n) { return String(n).padStart(3, "0"); }
+            function escapeHtml(s) {
+                const el = document.createElement("span");
+                el.textContent = s;
+                return el.innerHTML;
+            }
 
-// Build all cards
-const container = document.getElementById("cards");
-const allCards = [];
+            function pad3(n) {
+                return String(n).padStart(3, "0");
+            }
 
-PROMPTS.forEach((prompt, idx) => {
-  const num = idx + 1;
-  const card = document.createElement("div");
-  card.className = "card";
-  card.dataset.index = idx;
+            // ── Toggle pill visual state ────────────────────────────────────────────────
+            document
+                .querySelectorAll(".toggle-pill input[type='checkbox']")
+                .forEach((cb) => {
+                    function sync() {
+                        cb.closest(".toggle-pill").classList.toggle(
+                            "off",
+                            !cb.checked,
+                        );
+                    }
+                    cb.addEventListener("change", sync);
+                    sync(); // init
+                });
 
-  const header = document.createElement("div");
-  header.className = "card-header";
-  header.innerHTML = `<span class="num">${num}</span><span class="prompt-text">${escapeHtml(prompt)}</span>`;
-  card.appendChild(header);
+            // ── Build all cards ─────────────────────────────────────────────────────────
+            const container = document.getElementById("cards");
+            const allCards = [];
 
-  const videosDiv = document.createElement("div");
-  videosDiv.className = "videos";
+            PROMPTS.forEach((prompt, idx) => {
+                const num = idx + 1;
+                const card = document.createElement("div");
+                card.className = "card";
+                card.dataset.index = idx;
 
-  SOURCES.forEach(src => {
-    const col = document.createElement("div");
-    col.className = "vid-col";
-    col.dataset.source = src.key;
+                const header = document.createElement("div");
+                header.className = "card-header";
+                header.innerHTML = `<span class="num">${num}</span><span class="prompt-text">${escapeHtml(prompt)}</span>`;
+                card.appendChild(header);
 
-    const label = document.createElement("div");
-    label.className = "vid-label " + src.cls;
-    label.textContent = src.label;
-    col.appendChild(label);
+                const videosDiv = document.createElement("div");
+                videosDiv.className = "videos";
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "vid-wrapper";
+                SOURCES.forEach((src) => {
+                    const col = document.createElement("div");
+                    col.className = "vid-col";
+                    col.dataset.source = src.key;
 
-    const video = document.createElement("video");
-    video.controls = true;
-    video.muted = true;
-    video.playsInline = true;
-    video.preload = "none";
-    video.dataset.src = `${BASE}/${src.folder}/prompt_${pad3(num)}.mp4`;
-    // Don't set src yet — IntersectionObserver will handle it
+                    const label = document.createElement("div");
+                    label.className = "vid-label " + src.cls;
+                    label.textContent = src.label;
+                    col.appendChild(label);
 
-    const errorOverlay = document.createElement("div");
-    errorOverlay.className = "error-overlay";
-    errorOverlay.textContent = "Video failed to load";
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "vid-wrapper";
 
-    wrapper.appendChild(video);
-    wrapper.appendChild(errorOverlay);
-    col.appendChild(wrapper);
-    videosDiv.appendChild(col);
-  });
+                    const video = document.createElement("video");
+                    video.controls = true;
+                    video.muted = true;
+                    video.playsInline = true;
+                    video.preload = "none";
+                    video.dataset.src = `${BASE}/${src.folder}/prompt_${pad3(num)}.mp4`;
+                    video.dataset.source = src.key;
+                    // Don't set src yet — IntersectionObserver will handle it
 
-  card.appendChild(videosDiv);
-  container.appendChild(card);
-  allCards.push(card);
-});
+                    const errorOverlay = document.createElement("div");
+                    errorOverlay.className = "error-overlay";
+                    errorOverlay.textContent = "Video failed to load";
 
-// --- Lazy loading via IntersectionObserver ---
-const lazyObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const card = entry.target;
-      const videos = card.querySelectorAll("video[data-src]");
-      videos.forEach(v => {
-        if (!v.src && v.dataset.src) {
-          v.src = v.dataset.src;
-          v.removeAttribute("data-src");
-        }
-      });
-      lazyObserver.unobserve(card);
-    }
-  });
-}, { rootMargin: "400px 0px" }); // start loading 400px before visible
+                    const bufferingOverlay = document.createElement("div");
+                    bufferingOverlay.className = "buffering-overlay";
+                    bufferingOverlay.textContent = "Buffering\u2026";
 
-allCards.forEach(card => lazyObserver.observe(card));
+                    wrapper.appendChild(video);
+                    wrapper.appendChild(errorOverlay);
+                    wrapper.appendChild(bufferingOverlay);
+                    col.appendChild(wrapper);
+                    videosDiv.appendChild(col);
+                });
 
-// --- Video error handling ---
-document.addEventListener("error", (e) => {
-  if (e.target.tagName === "VIDEO") {
-    const wrapper = e.target.closest(".vid-wrapper");
-    if (wrapper) wrapper.classList.add("has-error");
-  }
-}, true);
+                card.appendChild(videosDiv);
+                container.appendChild(card);
+                allCards.push(card);
+            });
 
-// --- Sync playback within each card ---
-allCards.forEach(card => {
-  const videos = Array.from(card.querySelectorAll("video"));
-  if (videos.length < 2) return;
+            // ── Lazy loading via IntersectionObserver ────────────────────────────────────
+            // When a card comes within 400px of the viewport, set src on its videos
+            // and switch preload to "metadata" so the browser fetches the first frame
+            // as a thumbnail.
+            const lazyObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            const card = entry.target;
+                            const videos =
+                                card.querySelectorAll("video[data-src]");
+                            videos.forEach((v) => {
+                                if (!v.src && v.dataset.src) {
+                                    v.src = v.dataset.src;
+                                    v.preload = "metadata"; // load first frame as thumbnail
+                                    v.removeAttribute("data-src");
+                                }
+                            });
+                            lazyObserver.unobserve(card);
+                        }
+                    });
+                },
+                { rootMargin: "400px 0px" },
+            );
 
-  let syncing = false;
+            allCards.forEach((card) => lazyObserver.observe(card));
 
-  videos.forEach((v) => {
-    v.addEventListener("play", () => {
-      if (syncing) return;
-      syncing = true;
-      videos.forEach(other => {
-        if (other !== v && !other.closest(".vid-wrapper").classList.contains("has-error")) {
-          other.currentTime = v.currentTime;
-          other.play().catch(() => {});
-        }
-      });
-      syncing = false;
-    });
+            // ── Video error handling ────────────────────────────────────────────────────
+            document.addEventListener(
+                "error",
+                (e) => {
+                    if (e.target.tagName === "VIDEO") {
+                        const wrapper = e.target.closest(".vid-wrapper");
+                        if (wrapper) wrapper.classList.add("has-error");
+                    }
+                },
+                true,
+            );
 
-    v.addEventListener("pause", () => {
-      if (syncing) return;
-      syncing = true;
-      videos.forEach(other => {
-        if (other !== v) other.pause();
-      });
-      syncing = false;
-    });
+            // ── Thumbnail generation ────────────────────────────────────────────────────
+            // Once a video's metadata/first frame is loaded, capture it to a canvas
+            // and set it as the poster image. This ensures the thumbnail persists
+            // even if the browser discards the decoded frame.
+            document.addEventListener(
+                "loadeddata",
+                (e) => {
+                    if (e.target.tagName !== "VIDEO") return;
+                    const video = e.target;
+                    if (video.poster) return; // already has one
+                    // Wait a tick so the frame is painted
+                    requestAnimationFrame(() => {
+                        try {
+                            if (
+                                video.videoWidth === 0 ||
+                                video.videoHeight === 0
+                            )
+                                return;
+                            const canvas = document.createElement("canvas");
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                            const ctx = canvas.getContext("2d");
+                            ctx.drawImage(video, 0, 0);
+                            video.poster = canvas.toDataURL("image/jpeg", 0.7);
+                        } catch (err) {
+                            // Cross-origin or security error — silently ignore, the video
+                            // element will still show the decoded first frame naturally.
+                        }
+                    });
+                },
+                true,
+            );
 
-    v.addEventListener("seeked", () => {
-      if (syncing) return;
-      syncing = true;
-      videos.forEach(other => {
-        if (other !== v) other.currentTime = v.currentTime;
-      });
-      syncing = false;
-    });
-  });
-});
+            // ── Helpers: which videos in a card are "active" (visible + not errored) ────
+            function getActiveVideos(card) {
+                return Array.from(card.querySelectorAll("video")).filter(
+                    (v) => {
+                        const col = v.closest(".vid-col");
+                        if (!col || col.style.display === "none") return false;
+                        const wrapper = v.closest(".vid-wrapper");
+                        if (wrapper && wrapper.classList.contains("has-error"))
+                            return false;
+                        if (!v.src) return false;
+                        return true;
+                    },
+                );
+            }
 
-// --- Controls ---
-function getVisibleCards() {
-  const viewTop = window.scrollY;
-  const viewBottom = viewTop + window.innerHeight;
-  return allCards.filter(card => {
-    const rect = card.getBoundingClientRect();
-    const absTop = rect.top + window.scrollY;
-    const absBottom = rect.bottom + window.scrollY;
-    return absBottom > viewTop && absTop < viewBottom;
-  });
-}
+            // ── Buffered sync playback ──────────────────────────────────────────────────
+            // For each card we track whether a sync-play is pending. When play is
+            // requested, we wait until ALL active (visible + not-errored) videos in
+            // the card have buffered enough data (readyState >= HAVE_FUTURE_DATA = 3)
+            // before starting them simultaneously.
 
-function playVisible() {
-  getVisibleCards().forEach(card => {
-    card.querySelectorAll("video").forEach(v => {
-      if (v.src && !v.closest(".vid-wrapper").classList.contains("has-error")) {
-        v.play().catch(() => {});
-      }
-    });
-  });
-}
+            const cardPlayState = new Map(); // card -> { pending: bool, cleanup: fn|null }
 
-function pauseAll() {
-  document.querySelectorAll("video").forEach(v => v.pause());
-}
+            function cancelPendingPlay(card) {
+                const state = cardPlayState.get(card);
+                if (state && state.cleanup) {
+                    state.cleanup();
+                }
+                cardPlayState.set(card, { pending: false, cleanup: null });
+                // Remove buffering overlays
+                card.querySelectorAll(".vid-wrapper.is-buffering").forEach(
+                    (w) => {
+                        w.classList.remove("is-buffering");
+                    },
+                );
+            }
 
-function resetAll() {
-  document.querySelectorAll("video").forEach(v => {
-    v.pause();
-    v.currentTime = 0;
-  });
-}
+            function requestSyncPlay(card, seekTime) {
+                cancelPendingPlay(card);
 
-// --- Column visibility toggles ---
-function updateVisibility() {
-  const showOriginal = document.getElementById("showOriginal").checked;
-  const showOurs = document.getElementById("showOurs").checked;
-  const showFal = document.getElementById("showFal").checked;
+                const active = getActiveVideos(card);
+                if (active.length === 0) return;
 
-  const visibleCount = [showOriginal, showOurs, showFal].filter(Boolean).length;
-  const colTemplate = Array(visibleCount).fill("1fr").join(" ");
+                // Sync currentTime
+                if (seekTime !== undefined) {
+                    active.forEach((v) => {
+                        v.currentTime = seekTime;
+                    });
+                }
 
-  document.querySelectorAll('.vid-col[data-source="original"]').forEach(el => {
-    el.style.display = showOriginal ? "" : "none";
-  });
-  document.querySelectorAll('.vid-col[data-source="ours"]').forEach(el => {
-    el.style.display = showOurs ? "" : "none";
-  });
-  document.querySelectorAll('.vid-col[data-source="fal"]').forEach(el => {
-    el.style.display = showFal ? "" : "none";
-  });
+                // Check if all are already buffered
+                const allReady = active.every((v) => v.readyState >= 3);
+                if (allReady) {
+                    active.forEach((v) => v.play().catch(() => {}));
+                    return;
+                }
 
-  // Also pause hidden videos to save resources
-  document.querySelectorAll(".vid-col").forEach(col => {
-    if (col.style.display === "none") {
-      col.querySelectorAll("video").forEach(v => v.pause());
-    }
-  });
+                // Not all ready — show buffering state and wait
+                const state = { pending: true, cleanup: null };
+                cardPlayState.set(card, state);
 
-  document.querySelectorAll(".videos").forEach(grid => {
-    grid.style.gridTemplateColumns = colTemplate || "1fr";
-  });
+                // Show buffering overlay on videos that aren't ready
+                active.forEach((v) => {
+                    v.preload = "auto"; // ensure browser starts fetching
+                    const wrapper = v.closest(".vid-wrapper");
+                    if (v.readyState < 3 && wrapper) {
+                        wrapper.classList.add("is-buffering");
+                    }
+                });
 
-  // Fix borders: only non-last visible gets a right border
-  document.querySelectorAll(".videos").forEach(grid => {
-    const visibleCols = Array.from(grid.querySelectorAll(".vid-col")).filter(c => c.style.display !== "none");
-    // Reset all borders
-    grid.querySelectorAll(".vid-col").forEach(c => c.style.borderRight = "none");
-    // Add borders to all but last visible
-    visibleCols.forEach((c, i) => {
-      if (i < visibleCols.length - 1) {
-        c.style.borderRight = "1px solid #21262d";
-      }
-    });
-  });
-}
-</script>
-</body>
+                const waiting = new Set(active.filter((v) => v.readyState < 3));
+
+                function onReady(e) {
+                    if (e.target.readyState >= 3) {
+                        waiting.delete(e.target);
+                        const wrapper = e.target.closest(".vid-wrapper");
+                        if (wrapper) wrapper.classList.remove("is-buffering");
+                    }
+                    if (waiting.size === 0 && state.pending) {
+                        state.pending = false;
+                        cleanup();
+                        active.forEach((v) => v.play().catch(() => {}));
+                    }
+                }
+
+                // Listen on both canplay and canplaythrough for reliability
+                active.forEach((v) => {
+                    v.addEventListener("canplay", onReady);
+                    v.addEventListener("canplaythrough", onReady);
+                });
+
+                function cleanup() {
+                    active.forEach((v) => {
+                        v.removeEventListener("canplay", onReady);
+                        v.removeEventListener("canplaythrough", onReady);
+                    });
+                    card.querySelectorAll(".vid-wrapper.is-buffering").forEach(
+                        (w) => {
+                            w.classList.remove("is-buffering");
+                        },
+                    );
+                    state.cleanup = null;
+                }
+                state.cleanup = cleanup;
+
+                // Safety timeout: if buffering takes >15s, play whatever is ready
+                const timeout = setTimeout(() => {
+                    if (state.pending) {
+                        state.pending = false;
+                        cleanup();
+                        active.forEach((v) => v.play().catch(() => {}));
+                    }
+                }, 15000);
+
+                const origCleanup = state.cleanup;
+                state.cleanup = () => {
+                    clearTimeout(timeout);
+                    if (origCleanup) origCleanup();
+                };
+            }
+
+            // ── Per-card sync: play/pause/seek ──────────────────────────────────────────
+            allCards.forEach((card) => {
+                const videos = Array.from(card.querySelectorAll("video"));
+                let syncing = false;
+
+                videos.forEach((v) => {
+                    // When user clicks play on a single video, trigger buffered sync play
+                    v.addEventListener("play", () => {
+                        if (syncing) return;
+                        syncing = true;
+                        // Pause immediately — requestSyncPlay will start all together
+                        v.pause();
+                        requestSyncPlay(card, v.currentTime);
+                        syncing = false;
+                    });
+
+                    v.addEventListener("pause", () => {
+                        if (syncing) return;
+                        syncing = true;
+                        cancelPendingPlay(card);
+                        videos.forEach((other) => {
+                            if (other !== v) other.pause();
+                        });
+                        syncing = false;
+                    });
+
+                    v.addEventListener("seeked", () => {
+                        if (syncing) return;
+                        syncing = true;
+                        const active = getActiveVideos(card);
+                        active.forEach((other) => {
+                            if (other !== v) other.currentTime = v.currentTime;
+                        });
+                        syncing = false;
+                    });
+                });
+            });
+
+            // ── Controls ────────────────────────────────────────────────────────────────
+            function getVisibleCards() {
+                const viewTop = window.scrollY;
+                const viewBottom = viewTop + window.innerHeight;
+                return allCards.filter((card) => {
+                    const rect = card.getBoundingClientRect();
+                    const absTop = rect.top + window.scrollY;
+                    const absBottom = rect.bottom + window.scrollY;
+                    return absBottom > viewTop && absTop < viewBottom;
+                });
+            }
+
+            function playVisible() {
+                getVisibleCards().forEach((card) => {
+                    requestSyncPlay(card, undefined);
+                });
+            }
+
+            function pauseAll() {
+                allCards.forEach((card) => cancelPendingPlay(card));
+                document.querySelectorAll("video").forEach((v) => v.pause());
+            }
+
+            function resetAll() {
+                allCards.forEach((card) => cancelPendingPlay(card));
+                document.querySelectorAll("video").forEach((v) => {
+                    v.pause();
+                    v.currentTime = 0;
+                });
+            }
+
+            // ── Column visibility toggles ───────────────────────────────────────────────
+            function updateVisibility() {
+                const visibility = {};
+                SOURCES.forEach((src) => {
+                    visibility[src.key] = document.getElementById(
+                        src.checkboxId,
+                    ).checked;
+                });
+
+                const visibleCount =
+                    Object.values(visibility).filter(Boolean).length;
+                const colTemplate = Array(visibleCount).fill("1fr").join(" ");
+
+                // Show/hide columns and pause hidden videos
+                SOURCES.forEach((src) => {
+                    const show = visibility[src.key];
+                    document
+                        .querySelectorAll(`.vid-col[data-source="${src.key}"]`)
+                        .forEach((el) => {
+                            el.style.display = show ? "" : "none";
+                            if (!show) {
+                                el.querySelectorAll("video").forEach((v) =>
+                                    v.pause(),
+                                );
+                            }
+                        });
+                });
+
+                // Update grid template
+                document.querySelectorAll(".videos").forEach((grid) => {
+                    grid.style.gridTemplateColumns = colTemplate || "1fr";
+                });
+
+                // Fix borders: only non-last visible gets a right border
+                document.querySelectorAll(".videos").forEach((grid) => {
+                    const visibleCols = Array.from(
+                        grid.querySelectorAll(".vid-col"),
+                    ).filter((c) => c.style.display !== "none");
+                    grid.querySelectorAll(".vid-col").forEach(
+                        (c) => (c.style.borderRight = "none"),
+                    );
+                    visibleCols.forEach((c, i) => {
+                        if (i < visibleCols.length - 1) {
+                            c.style.borderRight = "1px solid #21262d";
+                        }
+                    });
+                });
+
+                // Update toggle pill visual state
+                document
+                    .querySelectorAll(".toggle-pill input[type='checkbox']")
+                    .forEach((cb) => {
+                        cb.closest(".toggle-pill").classList.toggle(
+                            "off",
+                            !cb.checked,
+                        );
+                    });
+            }
+
+            // Apply initial visibility (CFG off by default)
+            updateVisibility();
+        </script>
+    </body>
 </html>
