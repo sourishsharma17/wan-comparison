@@ -4,7 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>
-            Video Comparison: Original vs Ours+CFG vs Ours+NAG vs Fal API
+            Video Comparison: Original vs Ours+CFG vs Ours+NAG vs Fal API vs
+            BF16
         </title>
         <style>
             *,
@@ -127,6 +128,9 @@
             }
             .vid-label.fal {
                 color: #f78166;
+            }
+            .vid-label.bf16 {
+                color: #e3b341;
             }
             .vid-wrapper {
                 position: relative;
@@ -261,8 +265,9 @@
             4-step, CFG 1.4 &nbsp;|&nbsp;
             <strong style="color: #d2a8ff">Ours + NAG</strong>: Lightning
             4-step, NAG 7.0 &nbsp;|&nbsp;
-            <strong style="color: #f78166">Fal API</strong>: 27-step (Wan 2.2
-            A14B)
+            <strong style="color: #e3b341">BF16</strong>: Lightning 4-step, BF16
+            &nbsp;|&nbsp; <strong style="color: #f78166">Fal API</strong>:
+            27-step (Wan 2.2 A14B)
         </p>
         <div class="controls">
             <button onclick="playVisible()">&#9654; Play Visible</button>
@@ -289,15 +294,24 @@
                 <span class="toggle-dot" style="background: #3fb950"></span>
                 <span style="color: #3fb950">Ours + CFG</span>
             </label>
-            <label class="toggle-pill" data-source="nag">
+            <label class="toggle-pill off" data-source="nag">
                 <input
                     type="checkbox"
                     id="showNag"
-                    checked
                     onchange="updateVisibility()"
                 />
                 <span class="toggle-dot" style="background: #d2a8ff"></span>
                 <span style="color: #d2a8ff">Ours + NAG</span>
+            </label>
+            <label class="toggle-pill" data-source="bf16">
+                <input
+                    type="checkbox"
+                    id="showBf16"
+                    checked
+                    onchange="updateVisibility()"
+                />
+                <span class="toggle-dot" style="background: #e3b341"></span>
+                <span style="color: #e3b341">BF16</span>
             </label>
             <label class="toggle-pill" data-source="fal">
                 <input
@@ -314,7 +328,7 @@
 
         <script>
             const BASE =
-                ".";
+                "https://github.com/prodialabs/experiments/raw/sourish-stuff-001/sourish-stuff-001";
             const PROMPTS = [
                 "Sunny lighting, edge lighting, low-contrast, medium close-up shot, left-heavy composition, clean single shot, warm colors, soft lighting, side lighting, day time. A young girl sits in a field of tall grass with two fluffy donkeys standing behind her.",
                 "Artificial lighting, edge lighting, desaturated colors, warm colors, right-heavy composition, over-the-shoulder shot, The camera focuses on a young woman with Western features, dressed in a blue and white checkered shirt. Her features are striking, and her eyes are bright and attentive.",
@@ -433,6 +447,13 @@
                     cls: "nag",
                     folder: "nag_my_test_videos",
                     checkboxId: "showNag",
+                },
+                {
+                    key: "bf16",
+                    label: "BF16",
+                    cls: "bf16",
+                    folder: "bf16_test_videos",
+                    checkboxId: "showBf16",
                 },
                 {
                     key: "fal",
@@ -636,6 +657,21 @@
                 );
             }
 
+            // Helper: play videos without triggering the sync-play handler.
+            // Sets a per-card guard flag that the play/pause event listeners
+            // check so they don't re-enter requestSyncPlay and create an
+            // infinite pause-play loop.
+            function playVideosSynced(card, videos) {
+                card._syncing = true;
+                videos.forEach((v) => v.play().catch(() => {}));
+                // Keep the guard up long enough for the resulting play events
+                // to fire and be ignored.  100 ms is plenty — the browser
+                // dispatches them in the same or next micro-/macro-task.
+                setTimeout(() => {
+                    card._syncing = false;
+                }, 100);
+            }
+
             function requestSyncPlay(card, seekTime) {
                 cancelPendingPlay(card);
 
@@ -644,15 +680,17 @@
 
                 // Sync currentTime
                 if (seekTime !== undefined) {
+                    card._syncing = true;
                     active.forEach((v) => {
                         v.currentTime = seekTime;
                     });
+                    card._syncing = false;
                 }
 
                 // Check if all are already buffered
                 const allReady = active.every((v) => v.readyState >= 3);
                 if (allReady) {
-                    active.forEach((v) => v.play().catch(() => {}));
+                    playVideosSynced(card, active);
                     return;
                 }
 
@@ -680,7 +718,7 @@
                     if (waiting.size === 0 && state.pending) {
                         state.pending = false;
                         cleanup();
-                        active.forEach((v) => v.play().catch(() => {}));
+                        playVideosSynced(card, active);
                     }
                 }
 
@@ -709,7 +747,7 @@
                     if (state.pending) {
                         state.pending = false;
                         cleanup();
-                        active.forEach((v) => v.play().catch(() => {}));
+                        playVideosSynced(card, active);
                     }
                 }, 15000);
 
@@ -723,37 +761,42 @@
             // ── Per-card sync: play/pause/seek ──────────────────────────────────────────
             allCards.forEach((card) => {
                 const videos = Array.from(card.querySelectorAll("video"));
-                let syncing = false;
+                card._syncing = false;
 
                 videos.forEach((v) => {
                     // When user clicks play on a single video, trigger buffered sync play
                     v.addEventListener("play", () => {
-                        if (syncing) return;
-                        syncing = true;
+                        if (card._syncing) return;
+                        card._syncing = true;
                         // Pause immediately — requestSyncPlay will start all together
                         v.pause();
                         requestSyncPlay(card, v.currentTime);
-                        syncing = false;
+                        // Don't clear _syncing here — playVideosSynced handles it
+                        // after the async play events have been dispatched & ignored.
                     });
 
                     v.addEventListener("pause", () => {
-                        if (syncing) return;
-                        syncing = true;
+                        if (card._syncing) return;
+                        card._syncing = true;
                         cancelPendingPlay(card);
                         videos.forEach((other) => {
                             if (other !== v) other.pause();
                         });
-                        syncing = false;
+                        setTimeout(() => {
+                            card._syncing = false;
+                        }, 100);
                     });
 
                     v.addEventListener("seeked", () => {
-                        if (syncing) return;
-                        syncing = true;
+                        if (card._syncing) return;
+                        card._syncing = true;
                         const active = getActiveVideos(card);
                         active.forEach((other) => {
                             if (other !== v) other.currentTime = v.currentTime;
                         });
-                        syncing = false;
+                        setTimeout(() => {
+                            card._syncing = false;
+                        }, 100);
                     });
                 });
             });
